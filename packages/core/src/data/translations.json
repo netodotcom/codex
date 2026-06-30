@@ -1,0 +1,523 @@
+[
+  {
+    "id": "kjv",
+    "name": "King James",
+    "year": "1611",
+    "license": "Public Domain",
+    "glyph": "KJV",
+    "lang": "EN",
+    "source": "bible-api",
+    "apiId": "kjv",
+    "mirrors": [
+      {
+        "kind": "bolls",
+        "apiId": "KJV"
+      }
+    ],
+    "bundle": "/data/bibles/kjv.json",
+    "offlinePriority": "must"
+  },
+  {
+    "id": "asv",
+    "name": "American Standard",
+    "year": "1901",
+    "license": "Public Domain",
+    "glyph": "ASV",
+    "lang": "EN",
+    "source": "bolls",
+    "apiId": "ASV",
+    "mirrors": [
+      {
+        "kind": "bible-api",
+        "apiId": "asv"
+      }
+    ]
+  },
+  {
+    "id": "bsb",
+    "name": "Berean Standard",
+    "year": "2022",
+    "license": "Public Domain",
+    "glyph": "BSB",
+    "lang": "EN",
+    "source": "bolls",
+    "apiId": "BSB"
+  },
+  {
+    "id": "web",
+    "name": "World English",
+    "year": "2000",
+    "license": "Public Domain",
+    "glyph": "WEB",
+    "lang": "EN",
+    "source": "bible-api",
+    "apiId": "web",
+    "mirrors": [
+      {
+        "kind": "bolls",
+        "apiId": "WEB"
+      }
+    ]
+  },
+  {
+    "id": "ylt",
+    "name": "Young's Literal",
+    "year": "1898",
+    "license": "Public Domain",
+    "glyph": "YLT",
+    "lang": "EN",
+    "source": "bolls",
+    "apiId": "YLT"
+  },
+  {
+    "id": "esv",
+    "name": "English Standard",
+    "year": "2001",
+    "license": "Crossway",
+    "glyph": "ESV",
+    "lang": "EN",
+    "source": "bolls",
+    "apiId": "ESV"
+  },
+  {
+    "id": "nasb",
+    "name": "New American Std.",
+    "year": "1995",
+    "license": "Lockman Foundation",
+    "glyph": "NASB",
+    "lang": "EN",
+    "source": "bolls",
+    "apiId": "NASB"
+  },
+  {
+    "id": "geneva",
+    "name": "Geneva",
+    "year": "1599",
+    "license": "Public Domain",
+    "glyph": "GNV",
+    "lang": "EN",
+    "source": "bolls",
+    "apiId": "GNV"
+  },
+  {
+    "id": "drb",
+    "name": "Douay-Rheims",
+    "year": "1899",
+    "license": "Public Domain",
+    "glyph": "DRB",
+    "lang": "EN",
+    "source": "bolls",
+    "apiId": "DRB",
+    "canons": [
+      "protestant",
+      "deuterocanon"
+    ]
+  },
+  {
+    "id": "kjva",
+    "name": "King James + Apocrypha (1611)",
+    "year": "1611",
+    "license": "Public Domain",
+    "glyph": "KJVA",
+    "lang": "EN",
+    "source": "bolls",
+    "apiId": "KJVA",
+    "mirrors": [
+      {
+        "kind": "bolls",
+        "apiId": "KJV2"
+      }
+    ],
+    "canons": [
+      "protestant",
+      "deuterocanon"
+    ]
+  },
+  {
+    "id": "eth-en",
+    "name": "Ethiopian Canon (English · 1 Enoch)",
+    "year": "1913",
+    "license": "Public Domain",
+    "glyph": "ETH",
+    "lang": "EN",
+    "source": "bundle",
+    "apiId": "eth-en",
+    "bundle": "data/bibles/eth-en.json",
+    "canons": [
+      "ethiopian"
+    ]
+  },
+  {
+    "id": "charles",
+    "name": "Charles · Apocrypha & Pseudepigrapha",
+    "year": "1913",
+    "license": "Public Domain",
+    "glyph": "CHR",
+    "lang": "EN",
+    "source": "bundle",
+    "apiId": "charles",
+    "bundle": "data/bibles/charles.json",
+    "canons": [
+      "deuterocanon",
+      "orthodox",
+      "ethiopian",
+      "pseudepigrapha"
+    ]
+  },
+  {
+    "id": "beyond",
+    "name": "Beyond the 66 (PD compilation)",
+    "year": "1913",
+    "license": "Public Domain",
+    "glyph": "BYD",
+    "lang": "EN",
+    "source": "bundle",
+    "apiId": "beyond",
+    "bundle": "data/bibles/beyond.json",
+    "canons": [
+      "deuterocanon",
+      "orthodox",
+      "ethiopian",
+      "syriac",
+      "armenian",
+      "coptic",
+      "pseudepigrapha"
+    ]
+  },
+  {
+    "id": "lamsa",
+    "name": "Lamsa (Aramaic Peshitta · English)",
+    "year": "1933",
+    "license": "Public Domain",
+    "glyph": "LAM",
+    "lang": "EN",
+    "source": "bolls",
+    "apiId": "LBP",
+    "canons": [
+      "protestant",
+      "syriac"
+    ]
+  },
+  {
+    "id": "zohrab",
+    "name": "Zohrab (Armenian · Grabar)",
+    "year": "1805",
+    "license": "Public Domain",
+    "glyph": "ZOH",
+    "lang": "HY",
+    "source": "bundle",
+    "apiId": "zohrab",
+    "bundle": "data/bibles/zohrab.json",
+    "canons": [
+      "protestant",
+      "deuterocanon",
+      "armenian"
+    ]
+  },
+  {
+    "id": "rv1960",
+    "name": "Reina-Valera",
+    "year": "1960",
+    "license": "Public Domain",
+    "glyph": "RV60",
+    "lang": "ES",
+    "source": "bolls",
+    "apiId": "RV1960"
+  },
+  {
+    "id": "rv2004",
+    "name": "Reina-Valera Gómez",
+    "year": "2004",
+    "license": "Public Domain",
+    "glyph": "RV04",
+    "lang": "ES",
+    "source": "bolls",
+    "apiId": "RV2004"
+  },
+  {
+    "id": "nvi-es",
+    "name": "Nueva Versión Internacional",
+    "year": "2015",
+    "license": "Bíblica",
+    "glyph": "NVI",
+    "lang": "ES",
+    "source": "bolls",
+    "apiId": "NVI"
+  },
+  {
+    "id": "lbla",
+    "name": "La Biblia de las Américas",
+    "year": "1997",
+    "license": "Lockman Foundation",
+    "glyph": "LBLA",
+    "lang": "ES",
+    "source": "bolls",
+    "apiId": "LBLA"
+  },
+  {
+    "id": "lut",
+    "name": "Luther",
+    "year": "1912",
+    "license": "Public Domain",
+    "glyph": "LUT",
+    "lang": "DE",
+    "source": "bolls",
+    "apiId": "LUT"
+  },
+  {
+    "id": "elb",
+    "name": "Elberfelder",
+    "year": "1871",
+    "license": "Public Domain",
+    "glyph": "ELB",
+    "lang": "DE",
+    "source": "bolls",
+    "apiId": "ELB"
+  },
+  {
+    "id": "sch",
+    "name": "Schlachter",
+    "year": "1951",
+    "license": "Genfer Bibelgesellschaft",
+    "glyph": "SCH",
+    "lang": "DE",
+    "source": "bolls",
+    "apiId": "SCH"
+  },
+  {
+    "id": "sch2000",
+    "name": "Schlachter 2000",
+    "year": "2000",
+    "license": "Genfer Bibelgesellschaft",
+    "glyph": "S00",
+    "lang": "DE",
+    "source": "bolls",
+    "apiId": "S00"
+  },
+  {
+    "id": "arc",
+    "name": "Almeida Revista e Corrigida",
+    "year": "2009",
+    "license": "Public Domain",
+    "glyph": "ARC",
+    "lang": "PT",
+    "source": "bolls",
+    "apiId": "ARC09"
+  },
+  {
+    "id": "ara",
+    "name": "Almeida Revista e Atualizada",
+    "year": "1993",
+    "license": "SBB",
+    "glyph": "ARA",
+    "lang": "PT",
+    "source": "bolls",
+    "apiId": "ARA"
+  },
+  {
+    "id": "nvi-pt",
+    "name": "Nova Versão Internacional",
+    "year": "2000",
+    "license": "Bíblica",
+    "glyph": "NVI",
+    "lang": "PT",
+    "source": "bolls",
+    "apiId": "NVIPT"
+  },
+  {
+    "id": "acf",
+    "name": "Almeida Corrigida Fiel",
+    "year": "2011",
+    "license": "SBTB",
+    "glyph": "ACF",
+    "lang": "PT",
+    "source": "bolls",
+    "apiId": "ACF11"
+  },
+  {
+    "id": "lsg",
+    "name": "Louis Segond",
+    "year": "1910",
+    "license": "Public Domain",
+    "glyph": "LSG",
+    "lang": "FR",
+    "source": "bolls",
+    "apiId": "FRLSG"
+  },
+  {
+    "id": "darby-fr",
+    "name": "Darby (Français)",
+    "year": "1890",
+    "license": "Public Domain",
+    "glyph": "DBY",
+    "lang": "FR",
+    "source": "bolls",
+    "apiId": "FRDBY"
+  },
+  {
+    "id": "nbs",
+    "name": "Nouvelle Bible Segond",
+    "year": "2002",
+    "license": "Société Biblique Française",
+    "glyph": "NBS",
+    "lang": "FR",
+    "source": "bolls",
+    "apiId": "NBS"
+  },
+  {
+    "id": "bds",
+    "name": "Bible du Semeur",
+    "year": "2015",
+    "license": "Bíblica",
+    "glyph": "BDS",
+    "lang": "FR",
+    "source": "bolls",
+    "apiId": "BDS"
+  },
+  {
+    "id": "clementine",
+    "name": "Vulgata Clementina",
+    "year": "1592",
+    "license": "Public Domain",
+    "glyph": "VUL",
+    "lang": "LA",
+    "source": "bible-api",
+    "apiId": "clementine",
+    "mirrors": [
+      {
+        "kind": "bolls",
+        "apiId": "VULG"
+      }
+    ]
+  },
+  {
+    "id": "vulg",
+    "name": "Vulgata Clementina (Bolls)",
+    "year": "1592",
+    "license": "Public Domain",
+    "glyph": "VLG",
+    "lang": "LA",
+    "source": "bolls",
+    "apiId": "VULG"
+  },
+  {
+    "id": "wlc",
+    "name": "Westminster Leningrad (Vowels)",
+    "year": "1010",
+    "license": "Public Domain",
+    "glyph": "WLC",
+    "lang": "HE",
+    "source": "bolls",
+    "apiId": "WLC",
+    "bundle": "data/bibles/wlc.json",
+    "offlinePriority": "must",
+    "canons": [
+      "ot"
+    ]
+  },
+  {
+    "id": "wlca",
+    "name": "Westminster (Vowels + Strong)",
+    "year": "1010",
+    "license": "Public Domain",
+    "glyph": "WLCa",
+    "lang": "HE",
+    "source": "bolls",
+    "apiId": "WLCa",
+    "canons": [
+      "ot"
+    ]
+  },
+  {
+    "id": "hac",
+    "name": "Aleppo Codex (Tanah)",
+    "year": "930",
+    "license": "Public Domain",
+    "glyph": "ALP",
+    "lang": "HE",
+    "source": "bolls",
+    "apiId": "HAC",
+    "canons": [
+      "ot"
+    ]
+  },
+  {
+    "id": "dhnt",
+    "name": "Delitzsch NT (Hebrew)",
+    "year": "1877",
+    "license": "Public Domain",
+    "glyph": "DHNT",
+    "lang": "HE",
+    "source": "bolls",
+    "apiId": "DHNT",
+    "canons": [
+      "nt"
+    ]
+  },
+  {
+    "id": "sblgnt",
+    "name": "SBL Greek New Testament",
+    "year": "2010",
+    "license": "CC BY 4.0 · SBL/Logos",
+    "glyph": "SBL",
+    "lang": "EL",
+    "source": "bundle",
+    "apiId": "sblgnt",
+    "bundle": "data/bibles/sblgnt.json",
+    "offlinePriority": "must",
+    "canons": [
+      "nt"
+    ]
+  },
+  {
+    "id": "tisch",
+    "name": "Tischendorf NT (Greek)",
+    "year": "1869",
+    "license": "Public Domain",
+    "glyph": "TISCH",
+    "lang": "EL",
+    "source": "bolls",
+    "apiId": "TISCH",
+    "canons": [
+      "nt"
+    ]
+  },
+  {
+    "id": "tr",
+    "name": "Textus Receptus (Greek)",
+    "year": "1624",
+    "license": "Public Domain",
+    "glyph": "TR",
+    "lang": "EL",
+    "source": "bolls",
+    "apiId": "TR",
+    "canons": [
+      "nt"
+    ]
+  },
+  {
+    "id": "lxx",
+    "name": "Septuagint (Greek OT)",
+    "year": "-200",
+    "license": "Public Domain",
+    "glyph": "LXX",
+    "lang": "EL",
+    "source": "bolls",
+    "apiId": "LXX",
+    "canons": [
+      "protestant",
+      "deuterocanon",
+      "orthodox"
+    ]
+  },
+  {
+    "id": "hi-hiov",
+    "name": "Hindi (BSI Re-edit)",
+    "year": "2024",
+    "license": "Bible Society India",
+    "glyph": "HIOV",
+    "lang": "HI",
+    "source": "bolls",
+    "apiId": "HIOV"
+  }
+]

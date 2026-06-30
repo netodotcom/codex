@@ -73,8 +73,13 @@ Then there's **BabelForge** — a translation lab. Pick a voice (1611 King James
 git clone https://github.com/holasoyneto/codex
 cd codex
 node server.js
-# open http://localhost:3000 — drop in your API key in Settings to enable AI panels
+# open http://localhost:7777 — drop in your API key in Settings to enable AI panels
 ```
+
+By default the server binds to `127.0.0.1` (your machine only) — the `/api/chat`
+proxy spends your API key with no auth, so it should not be exposed. To open
+CODEX from a phone or tablet on the same Wi-Fi, start it with `node server.js --lan`
+(binds `0.0.0.0` and prints the LAN URL). Only do this on a network you trust.
 
 Or just open the hosted build: **https://holasoyneto.github.io/codex**
 

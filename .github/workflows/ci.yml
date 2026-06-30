@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # No lockfile is committed (package-lock.json is gitignored), so use
+      # `npm install`. devDeps are few and @babel/standalone is pinned exact.
+      - name: Install dev tooling
+        run: npm install
+
+      - name: Syntax check (.js + .jsx)
+        run: npm run check
+
+      - name: Rebuild dist/ from source
+        run: npm run build
+
+      # The app ships pre-transpiled dist/*.js committed to the repo. If a .jsx
+      # was changed without running `npm run build`, the rebuild above produces
+      # different output than what was committed — fail loudly so stale dist/
+      # never reaches a deploy (e.g. GitHub Pages serves dist/ verbatim).
+      - name: Verify dist/ is in sync with sources
+        run: |
+          if ! git diff --exit-code -- dist/; then
+            echo "::error::dist/ is out of sync with the .jsx sources. Run 'npm run build' and commit the dist/ changes."
+            exit 1
+          fi

@@ -1,0 +1,22 @@
+{
+  "name": "@codex/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./refs": "./src/refs.ts",
+    "./gematria": "./src/gematria.ts",
+    "./data": "./src/data.ts",
+    "./modules": "./src/modules.ts",
+    "./bible": "./src/bible.ts",
+    "./marks": "./src/marks.ts",
+    "./i18n": "./src/i18n.ts",
+    "./panels": "./src/panels.ts",
+    "./gematria-index": "./src/gematria-index.ts",
+    "./search": "./src/search.ts",
+    "./llm": "./src/llm/index.ts"
+  }
+}

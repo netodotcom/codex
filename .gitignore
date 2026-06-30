@@ -30,7 +30,9 @@ Thumbs.db
 .sublime-workspace
 
 # Build output
-# dist/ is COMMITTED since v7.6 — pre-transpiled JSX the app ships (scripts/build-jsx.mjs)
+# COMMITTED build artifacts (the "fork & go" ethos — shipped, not ignored):
+#   legacy/dist/        — pre-transpiled JSX the legacy app loads (scripts/build-jsx.mjs)
+#   vendor/codex-llm.cjs — @codex/core/llm bundled to CJS for the Node server (scripts/build-server-llm.mjs)
 build/
 *.bundle.js
 
@@ -51,3 +53,5 @@ data/donations.audit.log
 # Internal dev artifacts (architecture map + foundation plan — not for the public PWA)
 _arch-viz.html
 FOUNDATION.md
+dist-web/
+

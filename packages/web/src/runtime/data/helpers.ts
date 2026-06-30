@@ -1,0 +1,356 @@
+// data — book canon, translation registry, default passage, and seed panels.
+// Migrated verbatim from legacy/data.js; all data shapes, ordering, and
+// comments preserved exactly.
+import type {
+  BookEntry,
+  TranslationEntry,
+  DefaultPassage,
+  SeedPanel,
+} from "./types.js";
+
+// ── Book canon ────────────────────────────────────────────────────────────────
+
+export const BOOKS: BookEntry[] = [
+  { id:"gen",name:"Genesis",        testament:"OT", chapters:50 },
+  { id:"exo",name:"Exodus",         testament:"OT", chapters:40 },
+  { id:"lev",name:"Leviticus",      testament:"OT", chapters:27 },
+  { id:"num",name:"Numbers",        testament:"OT", chapters:36 },
+  { id:"deu",name:"Deuteronomy",    testament:"OT", chapters:34 },
+  { id:"jos",name:"Joshua",         testament:"OT", chapters:24 },
+  { id:"jdg",name:"Judges",         testament:"OT", chapters:21 },
+  { id:"rut",name:"Ruth",           testament:"OT", chapters:4 },
+  { id:"1sa",name:"I Samuel",       testament:"OT", chapters:31 },
+  { id:"2sa",name:"II Samuel",      testament:"OT", chapters:24 },
+  { id:"1ki",name:"I Kings",        testament:"OT", chapters:22 },
+  { id:"2ki",name:"II Kings",       testament:"OT", chapters:25 },
+  { id:"1ch",name:"I Chronicles",   testament:"OT", chapters:29 },
+  { id:"2ch",name:"II Chronicles",  testament:"OT", chapters:36 },
+  { id:"ezr",name:"Ezra",           testament:"OT", chapters:10 },
+  { id:"neh",name:"Nehemiah",       testament:"OT", chapters:13 },
+  { id:"est",name:"Esther",         testament:"OT", chapters:10 },
+  { id:"job",name:"Job",            testament:"OT", chapters:42 },
+  { id:"psa",name:"Psalms",         testament:"OT", chapters:150 },
+  { id:"pro",name:"Proverbs",       testament:"OT", chapters:31 },
+  { id:"ecc",name:"Ecclesiastes",   testament:"OT", chapters:12 },
+  { id:"sng",name:"Song of Songs",  testament:"OT", chapters:8 },
+  { id:"isa",name:"Isaiah",         testament:"OT", chapters:66 },
+  { id:"jer",name:"Jeremiah",       testament:"OT", chapters:52 },
+  { id:"lam",name:"Lamentations",   testament:"OT", chapters:5 },
+  { id:"ezk",name:"Ezekiel",        testament:"OT", chapters:48 },
+  { id:"dan",name:"Daniel",         testament:"OT", chapters:12 },
+  { id:"hos",name:"Hosea",          testament:"OT", chapters:14 },
+  { id:"jol",name:"Joel",           testament:"OT", chapters:3 },
+  { id:"amo",name:"Amos",           testament:"OT", chapters:9 },
+  { id:"oba",name:"Obadiah",        testament:"OT", chapters:1 },
+  { id:"jon",name:"Jonah",          testament:"OT", chapters:4 },
+  { id:"mic",name:"Micah",          testament:"OT", chapters:7 },
+  { id:"nam",name:"Nahum",          testament:"OT", chapters:3 },
+  { id:"hab",name:"Habakkuk",       testament:"OT", chapters:3 },
+  { id:"zep",name:"Zephaniah",      testament:"OT", chapters:3 },
+  { id:"hag",name:"Haggai",         testament:"OT", chapters:2 },
+  { id:"zec",name:"Zechariah",      testament:"OT", chapters:14 },
+  { id:"mal",name:"Malachi",        testament:"OT", chapters:4 },
+  { id:"mat",name:"Matthew",        testament:"NT", chapters:28 },
+  { id:"mrk",name:"Mark",           testament:"NT", chapters:16 },
+  { id:"luk",name:"Luke",           testament:"NT", chapters:24 },
+  { id:"jhn",name:"John",           testament:"NT", chapters:21 },
+  { id:"act",name:"Acts",           testament:"NT", chapters:28 },
+  { id:"rom",name:"Romans",         testament:"NT", chapters:16 },
+  { id:"1co",name:"I Corinthians",  testament:"NT", chapters:16 },
+  { id:"2co",name:"II Corinthians", testament:"NT", chapters:13 },
+  { id:"gal",name:"Galatians",      testament:"NT", chapters:6 },
+  { id:"eph",name:"Ephesians",      testament:"NT", chapters:6 },
+  { id:"php",name:"Philippians",    testament:"NT", chapters:4 },
+  { id:"col",name:"Colossians",     testament:"NT", chapters:4 },
+  { id:"1th",name:"I Thessalonians",testament:"NT", chapters:5 },
+  { id:"2th",name:"II Thessalonians",testament:"NT",chapters:3 },
+  { id:"1ti",name:"I Timothy",      testament:"NT", chapters:6 },
+  { id:"2ti",name:"II Timothy",     testament:"NT", chapters:4 },
+  { id:"tit",name:"Titus",          testament:"NT", chapters:3 },
+  { id:"phm",name:"Philemon",       testament:"NT", chapters:1 },
+  { id:"heb",name:"Hebrews",        testament:"NT", chapters:13 },
+  { id:"jas",name:"James",          testament:"NT", chapters:5 },
+  { id:"1pe",name:"I Peter",        testament:"NT", chapters:5 },
+  { id:"2pe",name:"II Peter",       testament:"NT", chapters:3 },
+  { id:"1jn",name:"I John",         testament:"NT", chapters:5 },
+  { id:"2jn",name:"II John",        testament:"NT", chapters:1 },
+  { id:"3jn",name:"III John",       testament:"NT", chapters:1 },
+  { id:"jud",name:"Jude",           testament:"NT", chapters:1 },
+  { id:"rev",name:"Revelation",     testament:"NT", chapters:22 },
+
+  // ── Deuterocanonical / Apocrypha (Catholic + Anglican KJV w/ Apocrypha) ──
+  // Shown in library only when the active translation declares one of
+  // these canons in its `canons` array.
+  { id:"tob",name:"Tobit",                    testament:"DC", canon:"deuterocanon", chapters:14 },
+  { id:"jdt",name:"Judith",                   testament:"DC", canon:"deuterocanon", chapters:16 },
+  { id:"wis",name:"Wisdom of Solomon",        testament:"DC", canon:"deuterocanon", chapters:19 },
+  { id:"sir",name:"Sirach (Ecclesiasticus)",  testament:"DC", canon:"deuterocanon", chapters:51 },
+  { id:"bar",name:"Baruch",                   testament:"DC", canon:"deuterocanon", chapters:6 },
+  { id:"1ma",name:"I Maccabees",              testament:"DC", canon:"deuterocanon", chapters:16 },
+  { id:"2ma",name:"II Maccabees",             testament:"DC", canon:"deuterocanon", chapters:15 },
+  { id:"esg",name:"Esther (Greek additions)", testament:"DC", canon:"deuterocanon", chapters:16 },
+  { id:"sus",name:"Susanna",                  testament:"DC", canon:"deuterocanon", chapters:1 },
+  { id:"bel",name:"Bel and the Dragon",       testament:"DC", canon:"deuterocanon", chapters:1 },
+  { id:"pra",name:"Prayer of Azariah",        testament:"DC", canon:"deuterocanon", chapters:1 },
+
+  // ── Anagignoskomena (Eastern Orthodox additions beyond Catholic) ──
+  { id:"1es",name:"I Esdras",                 testament:"DC", canon:"orthodox",     chapters:9 },
+  { id:"2es",name:"II Esdras (4 Ezra)",       testament:"DC", canon:"orthodox",     chapters:16 },
+  { id:"3ma",name:"III Maccabees",            testament:"DC", canon:"orthodox",     chapters:7 },
+  { id:"4ma",name:"IV Maccabees",             testament:"DC", canon:"orthodox",     chapters:18 },
+  { id:"pmn",name:"Prayer of Manasseh",       testament:"DC", canon:"orthodox",     chapters:1 },
+  { id:"ps151",name:"Psalm 151",              testament:"DC", canon:"orthodox",     chapters:1 },
+
+  // ── Ge'ez / Ethiopian (1 Enoch, Jubilees, Meqabyan, etc.) ──
+  { id:"1en",name:"I Enoch (Book of Enoch)",  testament:"DC", canon:"ethiopian",    chapters:108 },
+  { id:"jub",name:"Jubilees",                 testament:"DC", canon:"ethiopian",    chapters:50 },
+  { id:"1mq",name:"I Meqabyan",               testament:"DC", canon:"ethiopian",    chapters:36 },
+  { id:"2mq",name:"II Meqabyan",              testament:"DC", canon:"ethiopian",    chapters:21 },
+  { id:"3mq",name:"III Meqabyan",             testament:"DC", canon:"ethiopian",    chapters:10 },
+  { id:"4ezr",name:"IV Ezra",                 testament:"DC", canon:"ethiopian",    chapters:16 },
+
+  // ── Armenian (uniquely includes 3 Corinthians, Laodiceans) ──
+  { id:"3co",name:"III Corinthians",          testament:"DC", canon:"armenian",     chapters:1 },
+  { id:"lao",name:"Epistle to the Laodiceans",testament:"DC", canon:"armenian",     chapters:1 },
+
+  // ── Syriac Peshitta tradition (additional Psalms 152-155, II Baruch) ──
+  { id:"ps2", name:"Apocryphal Psalms 152-155", testament:"DC", canon:"syriac",     chapters:4 },
+  { id:"2ba", name:"II Baruch (Syriac Apocalypse)", testament:"DC", canon:"syriac", chapters:87 },
+  { id:"epb", name:"Epistle of Baruch (Syriac)", testament:"DC", canon:"syriac",    chapters:1 },
+
+  // ── Coptic / Bohairic distinct additions ──
+  { id:"1cl", name:"I Clement",               testament:"DC", canon:"coptic",       chapters:65 },
+  { id:"2cl", name:"II Clement",              testament:"DC", canon:"coptic",       chapters:20 },
+
+  // ── Pseudepigrapha shelf (cross-tradition esoterica) ──
+  { id:"2en", name:"II Enoch (Slavonic)",     testament:"DC", canon:"pseudepigrapha", chapters:68 },
+  { id:"3en", name:"III Enoch (Hebrew Sefer Hekhalot)", testament:"DC", canon:"pseudepigrapha", chapters:48 },
+  { id:"jas-pat", name:"Testaments of the Twelve Patriarchs", testament:"DC", canon:"pseudepigrapha", chapters:12 },
+  { id:"od-sol", name:"Odes of Solomon",      testament:"DC", canon:"pseudepigrapha", chapters:42 },
+  { id:"ap-mos", name:"Apocalypse of Moses",  testament:"DC", canon:"pseudepigrapha", chapters:43 },
+];
+
+// ── Translation registry ──────────────────────────────────────────────────────
+// Translations exposed in the picker. KJV + WEB come from bible-api.com,
+// the rest from bolls.life (CORS-enabled, free, all public-domain).
+// Every chapter is cached in localStorage forever.
+
+export const TRANSLATIONS: TranslationEntry[] = [
+  // ── English (8) ───────────────────────────────────────────────────
+  // Each translation: primary `source`/`apiId` + optional `mirrors` array
+  // for fallback resilience. `bundle` is a pre-baked corpus path for the
+  // app to fetch once and store entirely offline (Phase C). The loader
+  // tries bundle → primary source → mirrors → friendly error.
+  { id:"kjv",    name:"King James",        year:"1611", license:"Public Domain", glyph:"KJV",  lang:"EN",
+    source:"bible-api", apiId:"kjv",
+    mirrors:[{kind:"bolls", apiId:"KJV"}],
+    bundle:"/data/bibles/kjv.json", offlinePriority:"must" },
+  { id:"asv",    name:"American Standard", year:"1901", license:"Public Domain", glyph:"ASV",  lang:"EN",
+    source:"bolls",     apiId:"ASV",
+    mirrors:[{kind:"bible-api", apiId:"asv"}] },
+  { id:"bsb",    name:"Berean Standard",   year:"2022", license:"Public Domain", glyph:"BSB",  lang:"EN",
+    source:"bolls",     apiId:"BSB" },
+  { id:"web",    name:"World English",     year:"2000", license:"Public Domain", glyph:"WEB",  lang:"EN",
+    source:"bible-api", apiId:"web",
+    mirrors:[{kind:"bolls", apiId:"WEB"}] },
+  { id:"ylt",    name:"Young's Literal",   year:"1898", license:"Public Domain", glyph:"YLT",  lang:"EN", source:"bolls", apiId:"YLT" },
+  { id:"esv",    name:"English Standard",  year:"2001", license:"Crossway",      glyph:"ESV",  lang:"EN", source:"bolls", apiId:"ESV" },
+  { id:"nasb",   name:"New American Std.", year:"1995", license:"Lockman Foundation", glyph:"NASB", lang:"EN", source:"bolls", apiId:"NASB" },
+  { id:"geneva", name:"Geneva",            year:"1599", license:"Public Domain", glyph:"GNV",  lang:"EN", source:"bolls", apiId:"GNV" },
+  { id:"drb",    name:"Douay-Rheims",      year:"1899", license:"Public Domain", glyph:"DRB",  lang:"EN", source:"bolls", apiId:"DRB",
+    canons:["protestant","deuterocanon"] },
+  // KJV with Apocrypha — the original 1611 included the deuterocanonical
+  // books between OT and NT. Bolls.life serves these as KJV2 / KJVA.
+  { id:"kjva",   name:"King James + Apocrypha (1611)", year:"1611", license:"Public Domain", glyph:"KJVA", lang:"EN", source:"bolls", apiId:"KJVA",
+    mirrors:[{kind:"bolls", apiId:"KJV2"}],
+    canons:["protestant","deuterocanon"] },
+  // Ethiopian (Ge'ez tradition) — broadest canon: Enoch, Jubilees,
+  // Meqabyan. Hosted as a static bundle in the repo since no public
+  // CORS-friendly API serves the full Ethiopian canon.
+  { id:"eth-en", name:"Ethiopian Canon (English · 1 Enoch)", year:"1913", license:"Public Domain", glyph:"ETH", lang:"EN", source:"bundle", apiId:"eth-en",
+    bundle:"data/bibles/eth-en.json",
+    canons:["ethiopian"] },
+  // Charles 1913 — the canonical English critical edition of the
+  // Apocrypha & Pseudepigrapha. Full 16-book bundle (Tobit through Psalm 151).
+  { id:"charles", name:"Charles · Apocrypha & Pseudepigrapha", year:"1913", license:"Public Domain", glyph:"CHR", lang:"EN", source:"bundle", apiId:"charles",
+    bundle:"data/bibles/charles.json",
+    canons:["deuterocanon","orthodox","ethiopian","pseudepigrapha"] },
+  // Beyond the 66 — PD compilation (scripts/build-beyond.mjs) covering the
+  // 18 registry books no other source carried: Esther Greek additions,
+  // Jubilees, IV Ezra, III Corinthians, Laodiceans, Psalms 152-155,
+  // II Baruch + Epistle, I/II Clement, II Enoch, Testaments of the Twelve
+  // Patriarchs, Protestant, Odes of Solomon, Apocalypse of Moses. Meqabyan I-III and
+  // III Enoch have no clean public-domain English text yet — those carry
+  // an honest placeholder (see bundle meta.missing).
+  { id:"beyond", name:"Beyond the 66 (PD compilation)", year:"1913", license:"Public Domain", glyph:"BYD", lang:"EN", source:"bundle", apiId:"beyond",
+    bundle:"data/bibles/beyond.json",
+    canons:["deuterocanon","orthodox","ethiopian","syriac","armenian","coptic","pseudepigrapha"] },
+  // Lamsa — English from the Aramaic Peshitta. Full text via bolls.life API.
+  { id:"lamsa", name:"Lamsa (Aramaic Peshitta · English)", year:"1933", license:"Public Domain", glyph:"LAM", lang:"EN", source:"bolls", apiId:"LBP",
+    canons:["protestant","syriac"] },
+  // Armenian Bible — Zohrab/Grabar edition. 15 key chapters in
+  // Classical Armenian; more chapters cache on first read.
+  { id:"zohrab", name:"Zohrab (Armenian · Grabar)", year:"1805", license:"Public Domain", glyph:"ZOH", lang:"HY", source:"bundle", apiId:"zohrab",
+    bundle:"data/bibles/zohrab.json",
+    canons:["protestant","deuterocanon","armenian"] },
+
+  // ── Spanish ───────────────────────────────────────────────────────
+  { id:"rv1960", name:"Reina-Valera",      year:"1960", license:"Public Domain", glyph:"RV60", lang:"ES", source:"bolls", apiId:"RV1960" },
+  { id:"rv2004", name:"Reina-Valera Gómez", year:"2004", license:"Public Domain", glyph:"RV04", lang:"ES", source:"bolls", apiId:"RV2004" },
+  { id:"nvi-es", name:"Nueva Versión Internacional", year:"2015", license:"Bíblica", glyph:"NVI", lang:"ES", source:"bolls", apiId:"NVI" },
+  { id:"lbla",   name:"La Biblia de las Américas", year:"1997", license:"Lockman Foundation", glyph:"LBLA", lang:"ES", source:"bolls", apiId:"LBLA" },
+
+  // ── German ────────────────────────────────────────────────────────
+  { id:"lut",    name:"Luther",            year:"1912", license:"Public Domain", glyph:"LUT",  lang:"DE", source:"bolls", apiId:"LUT" },
+  { id:"elb",    name:"Elberfelder",       year:"1871", license:"Public Domain", glyph:"ELB",  lang:"DE", source:"bolls", apiId:"ELB" },
+  { id:"sch",    name:"Schlachter",        year:"1951", license:"Genfer Bibelgesellschaft", glyph:"SCH", lang:"DE", source:"bolls", apiId:"SCH" },
+  { id:"sch2000",name:"Schlachter 2000",   year:"2000", license:"Genfer Bibelgesellschaft", glyph:"S00", lang:"DE", source:"bolls", apiId:"S00" },
+
+  // ── Portuguese ────────────────────────────────────────────────────
+  { id:"arc",    name:"Almeida Revista e Corrigida", year:"2009", license:"Public Domain", glyph:"ARC", lang:"PT", source:"bolls", apiId:"ARC09" },
+  { id:"ara",    name:"Almeida Revista e Atualizada", year:"1993", license:"SBB", glyph:"ARA", lang:"PT", source:"bolls", apiId:"ARA" },
+  { id:"nvi-pt", name:"Nova Versão Internacional", year:"2000", license:"Bíblica", glyph:"NVI", lang:"PT", source:"bolls", apiId:"NVIPT" },
+  { id:"acf",    name:"Almeida Corrigida Fiel", year:"2011", license:"SBTB", glyph:"ACF", lang:"PT", source:"bolls", apiId:"ACF11" },
+
+  // ── French ────────────────────────────────────────────────────────
+  { id:"lsg",    name:"Louis Segond",      year:"1910", license:"Public Domain", glyph:"LSG", lang:"FR", source:"bolls", apiId:"FRLSG" },
+  { id:"darby-fr",name:"Darby (Français)", year:"1890", license:"Public Domain", glyph:"DBY", lang:"FR", source:"bolls", apiId:"FRDBY" },
+  { id:"nbs",    name:"Nouvelle Bible Segond", year:"2002", license:"Société Biblique Française", glyph:"NBS", lang:"FR", source:"bolls", apiId:"NBS" },
+  { id:"bds",    name:"Bible du Semeur",   year:"2015", license:"Bíblica", glyph:"BDS", lang:"FR", source:"bolls", apiId:"BDS" },
+
+  // ── Latin ─────────────────────────────────────────────────────────
+  { id:"clementine", name:"Vulgata Clementina", year:"1592", license:"Public Domain", glyph:"VUL", lang:"LA", source:"bible-api", apiId:"clementine",
+    mirrors:[{kind:"bolls", apiId:"VULG"}] },
+  { id:"vulg",   name:"Vulgata Clementina (Bolls)", year:"1592", license:"Public Domain", glyph:"VLG", lang:"LA", source:"bolls", apiId:"VULG" },
+
+  // ── Hebrew (Tanakh + DHNT for NT) ─────────────────────────────────
+  // WLC ships as a full offline bundle (scripts/build-corpora.mjs) —
+  // the complete Tanakh, vowels included, readable with zero network.
+  // `canons:["ot"]` scopes the library to the books the corpus contains.
+  { id:"wlc",    name:"Westminster Leningrad (Vowels)", year:"1010", license:"Public Domain", glyph:"WLC", lang:"HE", source:"bolls", apiId:"WLC",
+    bundle:"data/bibles/wlc.json", offlinePriority:"must", canons:["ot"] },
+  { id:"wlca",   name:"Westminster (Vowels + Strong)", year:"1010", license:"Public Domain", glyph:"WLCa", lang:"HE", source:"bolls", apiId:"WLCa", canons:["ot"] },
+  { id:"hac",    name:"Aleppo Codex (Tanah)", year:"930", license:"Public Domain", glyph:"ALP", lang:"HE", source:"bolls", apiId:"HAC", canons:["ot"] },
+  { id:"dhnt",   name:"Delitzsch NT (Hebrew)", year:"1877", license:"Public Domain", glyph:"DHNT", lang:"HE", source:"bolls", apiId:"DHNT", canons:["nt"] },
+
+  // ── Greek (NT + LXX OT) ───────────────────────────────────────────
+  // SBLGNT — the SBL critical Greek NT (CC BY 4.0), full offline bundle.
+  { id:"sblgnt", name:"SBL Greek New Testament", year:"2010", license:"CC BY 4.0 · SBL/Logos", glyph:"SBL", lang:"EL", source:"bundle", apiId:"sblgnt",
+    bundle:"data/bibles/sblgnt.json", offlinePriority:"must", canons:["nt"] },
+  { id:"tisch",  name:"Tischendorf NT (Greek)", year:"1869", license:"Public Domain", glyph:"TISCH", lang:"EL", source:"bolls", apiId:"TISCH", canons:["nt"] },
+  { id:"tr",     name:"Textus Receptus (Greek)", year:"1624", license:"Public Domain", glyph:"TR", lang:"EL", source:"bolls", apiId:"TR", canons:["nt"] },
+  { id:"lxx",    name:"Septuagint (Greek OT)",  year:"-200", license:"Public Domain", glyph:"LXX", lang:"EL", source:"bolls", apiId:"LXX",
+    canons:["protestant","deuterocanon","orthodox"] },
+
+  // ── Hindi ─────────────────────────────────────────────────────────
+  // bolls.life only carries one Hindi translation as of 2026: HIOV (Hindi
+  // Old Version, re-edited by Bible Society of India). Earlier registry
+  // entries (HHBD, IRV-HIN, ERVHI) returned empty arrays — removed.
+  { id:"hi-hiov", name:"Hindi (BSI Re-edit)", year:"2024", license:"Bible Society India", glyph:"HIOV", lang:"HI", source:"bolls", apiId:"HIOV" },
+];
+
+// ── Default passage ───────────────────────────────────────────────────────────
+
+// Default starting passage when the app boots cold.
+export const DEFAULT_PASSAGE: DefaultPassage = { bookId:"jhn", chapter:1 };
+
+// ── Seed panels ───────────────────────────────────────────────────────────────
+// Seed panel content for John 1 — for any other passage the right-rail
+// panels regenerate via window.claude.complete (cached in localStorage).
+
+export const SEED_PANELS: Record<string, SeedPanel> = {
+  "jhn.1": {
+    title: "The Prologue · ΛΟΓΟΣ",
+    subtitle: "On the Word made flesh",
+    talmud: [
+      { ref:"b. Chagigah 12a", heading:"On the Light that preceded the Sun",
+        body:"Rabbi Elazar taught: with the light created on the first day a man could see from one end of the world to the other. When the Holy One foresaw the deeds of the generation of Enosh and of the Flood, He hid that light away — and it is reserved for the righteous in the world to come.",
+        tag:"or ha-ganuz · 'the hidden light'" },
+      { ref:"Targum Onkelos · Gen 1:1", heading:"The Memra (Word) as Creator",
+        body:"Where the Hebrew reads 'In the beginning God created,' the Aramaic Targums repeatedly substitute 'by His Memra' — by His Word — the Holy One created. The same Memra walks in the Garden, speaks at Sinai, and gathers the exiles.",
+        tag:"memra · מימרא" },
+      { ref:"b. Berakhot 55a", heading:"Three keys held by the Holy One",
+        body:"Rabbi Yochanan said: three keys the Holy One keeps in His own hand, and entrusts to no messenger — the key of rain, the key of the womb, and the key of the resurrection of the dead.",
+        tag:"shalosh maftechot" },
+      { ref:"Genesis Rabbah 1:1", heading:"Wisdom as Architect",
+        body:"'The Torah declares: I was the working tool of the Holy One, blessed be He.' As an architect builds not from his own mind but from the plan, so the Holy One looked into the Torah and created the world.",
+        tag:"be-reshit · 'with wisdom'" },
+    ],
+    commentary: [
+      { from:"Patristic", author:"Augustine, Tract. in Ioh. 1",
+        body:"'In the beginning was the Word.' Not made, for through Him all things were made. The Greek Logos is at once Word, Reason, and Account — the eternal speech by which the Father utters Himself." },
+      { from:"Reformation", author:"Calvin, Comm. on John",
+        body:"John, in calling the Son 'Word,' does not so much give Him a new name as press home His eternity and His office: He is the Father's mind made articulate." },
+      { from:"Modern", author:"F. F. Bruce, Gospel of John",
+        body:"The Prologue echoes Genesis 1:1, staking the claim that the same creative speech that called light from darkness has now become flesh and pitched its tent (ἐσκήνωσεν) among us." },
+      { from:"Devotional", author:"Practical note",
+        body:"Verses 12–13 are the hinge: 'to as many as received Him.' Reception is not bloodline, not effort of flesh, not the will of any other man. The new birth is sourced in God alone." },
+    ],
+    gematria: [
+      { term:"λόγος",     translit:"lógos",   meaning:"Word, Reason",      value:373,  system:"Greek isopsephy" },
+      { term:"Θεός",      translit:"Theós",   meaning:"God",               value:284,  system:"Greek isopsephy" },
+      { term:"ζωή",       translit:"zōē",     meaning:"Life",              value:815,  system:"Greek isopsephy" },
+      { term:"φῶς",       translit:"phōs",    meaning:"Light",             value:1500, system:"Greek isopsephy" },
+      { term:"Ἰησοῦς",    translit:"Iēsoûs",  meaning:"Jesus",             value:888,  system:"Greek isopsephy" },
+      { term:"Χριστός",   translit:"Christós",meaning:"Christ / Anointed", value:1480, system:"Greek isopsephy" },
+      { term:"בְּרֵאשִׁית",translit:"bereshit",meaning:"In the beginning",  value:913,  system:"Mispar Hechrachi" },
+      { term:"אֱלֹהִים",  translit:"Elohim",  meaning:"God (plural)",      value:86,   system:"Mispar Hechrachi" },
+      { term:"אוֹר",       translit:"or",      meaning:"Light",             value:207,  system:"Mispar Hechrachi" },
+      { term:"אֶחָד",     translit:"echad",   meaning:"One",               value:13,   system:"Mispar Hechrachi" },
+      { term:"אַהֲבָה",   translit:"ahavah",  meaning:"Love",              value:13,   system:"Mispar Hechrachi" },
+      { term:"מֶמְרָא",   translit:"memra",   meaning:"Word (Aramaic)",    value:281,  system:"Mispar Hechrachi" },
+    ],
+    gematriaNotes: [
+      "'Echad' (One) and 'Ahavah' (Love) share value 13 — and 13 + 13 = 26, the value of יהוה (YHWH). God is one in love.",
+      "Ἰησοῦς = 888, set against the beast 666 (Rev 13:18) — fullness against falling-short.",
+      "λόγος (373) is a prime; φῶς (1500) is built on 3 × 500 — light refracted through the trinitarian three.",
+    ],
+    gnosis: [
+      { sigil:"✶", title:"Pleroma · The Fullness",
+        body:"Read v. 16 with the gnostics: 'of his fullness (πληρώματος) have all we received.' The Pleroma is not a place but a density — the unfallen wholeness from which every aeon and soul issues." },
+      { sigil:"☉", title:"Logos as Demiurge & Reconciler",
+        body:"Classical gnosis splits the creator from the Father. John refuses the split: the same Logos that 'made all things' is also 'in the bosom of the Father.'" },
+      { sigil:"𓂀", title:"The Inner Light (v. 9)",
+        body:"'The true light that lighteth every man.' Every soul carries a seed of the Logos. Scripture is the mirror by which the seed recognises itself." },
+      { sigil:"✺", title:"Hidden Light · Or ha-Ganuz",
+        body:"The Talmudic light hidden in Genesis is, for the mystics, identical with the light John names in v. 5. It shines now only in fragments, but is reserved whole for the world to come." },
+      { sigil:"⟁", title:"Tabernacle (ἐσκήνωσεν)",
+        body:"v. 14 — 'dwelt' is literally 'pitched his tent.' The Greek hides a Hebrew pun: שָׁכַן (shakhan), the root of Shekinah. The Word makes flesh into a Holy of Holies." },
+    ],
+    crossRefs: [
+      { ref:"Gen 1:1–3",    note:"'In the beginning… let there be light.'" },
+      { ref:"Prov 8:22–31", note:"Wisdom present at creation." },
+      { ref:"Col 1:15–17",  note:"All things created through Him, hold together in Him." },
+      { ref:"Heb 1:1–3",    note:"God has spoken to us in His Son." },
+      { ref:"1 John 1:1–4", note:"'That which was from the beginning…'" },
+      { ref:"Rev 19:13",    note:"'His name is called The Word of God.'" },
+    ],
+    // DISARM — seeded examples of historical misuse of John 1 and the
+    // textual rebuttals. Kept short and cross-spectrum.
+    disarm: {
+      entries: [
+        {
+          verse: "1:11",
+          weaponization: "Christian anti-Semitism · 'his own received him not' used to justify deicide charge and pogroms",
+          quote: "paraphrase: 'The Jews are a people rejected by God, having denied the Word that came unto them.'",
+          source: "Pseudo-Chrysostom and medieval Adversus Judaeos homilies, 4th–12th c.",
+          rebuttal: "'His own' (τὰ ἴδια) names the cosmos in v.10 and Israel in v.11 — but vv.12–13 immediately open reception to 'as many as received him,' Jew first. John himself, the evangelist, and every named disciple in the Gospel are Jews. The verse describes a remnant pattern within Israel (cf. Rom 9–11), not a collective indictment."
+        },
+        {
+          verse: "1:5",
+          weaponization: "Colonial 'benighted heathen' rhetoric — used by missionary-imperial alliances to frame conquest as bringing 'light to darkness'",
+          quote: "commonly attributed to 19th-c. missionary-society circulars: 'the light shineth in darkness, and we are sent to carry it.'",
+          source: "Anglo-American missionary literature, c.1820–1900 (e.g. CMS, ABCFM tracts)",
+          rebuttal: "The Greek φαίνει is present tense — the light is already shining in every place before any missionary arrives (v.9, 'lighteth every man that cometh into the world'). The verse undercuts, rather than authorises, the conquest-as-evangelism frame: the darkness is theological, not ethnographic."
+        },
+        {
+          verse: "1:14",
+          weaponization: "Prosperity gospel · 'full of grace and truth' rebranded as material abundance owed to the faithful",
+          quote: "paraphrase: 'He came that you might receive the fullness — health, wealth, and favour — that is your covenant right.'",
+          source: "Word-of-Faith broadcast preaching, late 20th–21st c.",
+          rebuttal: "πλήρης χάριτος καὶ ἀληθείας echoes Exod 34:6 (חֶסֶד וֶאֱמֶת) — covenant loyalty and faithfulness, not material plenty. v.14 frames the incarnation as ἐσκήνωσεν ('tented among us') — divine condescension to share human poverty, the opposite trajectory of prosperity teaching."
+        },
+      ],
+    },
+  },
+};

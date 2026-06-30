@@ -1,0 +1,12 @@
+{
+  "name": "@codex/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "prebuild": "node ../../scripts/gen-web-entry.mjs",
+    "build": "vite build",
+    "preview": "vite preview"
+  }
+}

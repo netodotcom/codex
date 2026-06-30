@@ -13,6 +13,14 @@ const zlib = require("zlib");
 const PORT = process.env.PORT || 7777;
 const DIR = __dirname;
 
+// Bind host. SECURITY: default to loopback only. The /api/chat proxy spends
+// the operator's API key (from .env) with no auth, and /api/key writes that
+// file — neither should be reachable from the LAN by default. Opt in to LAN
+// exposure (e.g. to open CODEX from a phone on the same Wi-Fi) with `--lan`
+// or HOST=0.0.0.0. Any explicit HOST=... value wins.
+const LAN = process.argv.includes("--lan");
+const HOST = process.env.HOST || (LAN ? "0.0.0.0" : "127.0.0.1");
+
 // Read .env from the app directory (KEY=value, # comments). Lets the user
 // drop their Anthropic key in a file instead of exporting it every shell.
 function loadDotenv() {
@@ -166,6 +174,44 @@ function readBody(req) {
   });
 }
 
+// Shared multi-provider + local LLM client (@codex/core/llm, bundled to CJS by
+// scripts/build-server-llm.mjs). The provider request/response logic now lives
+// in ONE place, shared with the browser direct-api shim — no more duplicated
+// per-provider dispatch. Node's global fetch is the injected IO. Re-run the
+// build script after editing packages/core/src/llm/.
+const CODEX_LLM = require("./vendor/codex-llm.cjs");
+const llmClient = CODEX_LLM.createLlmClient({ fetch });
+
+// Dispatch through the core client and re-wrap into the Anthropic-style
+// envelope the /api/chat handler already speaks ({content, model, usage}).
+// The server has already validated the model, so we pin it (no core remap).
+async function llmDispatch(provider, payload, opts) {
+  try {
+    const cfg = CODEX_LLM.resolveConfig(provider, opts);
+    if (opts && opts.model) cfg.model = opts.model;
+    const res = await llmClient.chat(
+      { system: payload.system, messages: payload.messages || [], maxTokens: payload.max_tokens },
+      cfg
+    );
+    return {
+      status: 200,
+      body: {
+        content: [{ type: "text", text: res.text }],
+        model: res.model,
+        usage: {
+          input_tokens: res.usage.input_tokens,
+          output_tokens: res.usage.output_tokens,
+          cache_creation_input_tokens: 0,
+          cache_read_input_tokens: 0,
+        },
+      },
+    };
+  } catch (e) {
+    if (e instanceof CODEX_LLM.LlmError) return { status: e.status, body: { error: e.message } };
+    return { status: 500, body: { error: String((e && e.message) || e) } };
+  }
+}
+
 function postAnthropic(payload) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify(payload);
@@ -198,115 +244,13 @@ function postAnthropic(payload) {
 // OpenAI shape and back to the same { text, model, usage } envelope our
 // client expects, so panels-gen and oracle stay provider-agnostic.
 function postXAI(payload) {
-  return new Promise((resolve, reject) => {
-    const oaiMessages = [];
-    if (payload.system) oaiMessages.push({ role: "system", content: payload.system });
-    for (const m of payload.messages || []) oaiMessages.push(m);
-    const body = JSON.stringify({
-      model: payload.model,
-      messages: oaiMessages,
-      max_tokens: payload.max_tokens || 1024,
-      temperature: 0.7,
-    });
-    const r = https.request({
-      hostname: "api.x.ai",
-      path: "/v1/chat/completions",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${XAI_KEY}`,
-        "Content-Length": Buffer.byteLength(body),
-      },
-    }, resp => {
-      let buf = "";
-      resp.on("data", c => buf += c);
-      resp.on("end", () => {
-        try {
-          const parsed = JSON.parse(buf);
-          if (resp.statusCode >= 400) {
-            resolve({ status: resp.statusCode, body: parsed });
-            return;
-          }
-          // Normalize OpenAI shape -> Anthropic-style envelope.
-          const text = parsed.choices?.[0]?.message?.content || "";
-          const usage = parsed.usage || {};
-          resolve({
-            status: 200,
-            body: {
-              content: [{ type: "text", text }],
-              model: parsed.model || payload.model,
-              usage: {
-                input_tokens: usage.prompt_tokens || 0,
-                output_tokens: usage.completion_tokens || 0,
-                cache_creation_input_tokens: 0,
-                cache_read_input_tokens: 0,
-              },
-            },
-          });
-        } catch (e) {
-          resolve({ status: resp.statusCode, body: { error: buf } });
-        }
-      });
-    });
-    r.on("error", reject);
-    r.write(body);
-    r.end();
-  });
+  return llmDispatch("xai", payload, { apiKey: XAI_KEY, model: payload.model, temperature: 0.7 });
 }
 
 // Groq — groq.com (DISTINCT from xAI's Grok). OpenAI-compatible chat
 // completions at api.groq.com/openai/v1. Free tier; Bearer gsk_… key.
 function postGroq(payload) {
-  return new Promise((resolve, reject) => {
-    const oaiMessages = [];
-    if (payload.system) oaiMessages.push({ role: "system", content: payload.system });
-    for (const m of payload.messages || []) oaiMessages.push(m);
-    const body = JSON.stringify({
-      model: payload.model || "llama-3.3-70b-versatile",
-      messages: oaiMessages,
-      max_tokens: payload.max_tokens || 1024,
-      temperature: 0.7,
-    });
-    const r = https.request({
-      hostname: "api.groq.com",
-      path: "/openai/v1/chat/completions",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${GROQ_KEY}`,
-        "Content-Length": Buffer.byteLength(body),
-      },
-    }, resp => {
-      let buf = "";
-      resp.on("data", c => buf += c);
-      resp.on("end", () => {
-        try {
-          const parsed = JSON.parse(buf);
-          if (resp.statusCode >= 400) { resolve({ status: resp.statusCode, body: parsed }); return; }
-          const text = parsed.choices?.[0]?.message?.content || "";
-          const usage = parsed.usage || {};
-          resolve({
-            status: 200,
-            body: {
-              content: [{ type: "text", text }],
-              model: parsed.model || payload.model,
-              usage: {
-                input_tokens: usage.prompt_tokens || 0,
-                output_tokens: usage.completion_tokens || 0,
-                cache_creation_input_tokens: 0,
-                cache_read_input_tokens: 0,
-              },
-            },
-          });
-        } catch (e) {
-          resolve({ status: resp.statusCode, body: { error: buf } });
-        }
-      });
-    });
-    r.on("error", reject);
-    r.write(body);
-    r.end();
-  });
+  return llmDispatch("groq", payload, { apiKey: GROQ_KEY, model: payload.model || "llama-3.3-70b-versatile", temperature: 0.7 });
 }
 
 // Google Gemini — native generateContent API (NOT OpenAI-compatible).
@@ -318,128 +262,17 @@ function postGroq(payload) {
 //   • System prompt is a sibling `systemInstruction` field, not a message.
 // Response normalizes to the same {content, model, usage} envelope.
 function postGemini(payload) {
-  return new Promise((resolve, reject) => {
-    const model = payload.model || "gemini-2.0-flash";
-    // Translate Anthropic-shape messages → Gemini contents.
-    const contents = [];
-    for (const m of payload.messages || []) {
-      const role = m.role === "assistant" ? "model" : "user";
-      let text = "";
-      if (typeof m.content === "string") text = m.content;
-      else if (Array.isArray(m.content)) text = m.content.map(b => (b && b.text) || "").join("\n");
-      else if (m.content && m.content.text) text = m.content.text;
-      contents.push({ role, parts: [{ text }] });
-    }
-    const reqBody = {
-      contents,
-      generationConfig: { maxOutputTokens: payload.max_tokens || 1024, temperature: 0.7 },
-    };
-    if (payload.system) {
-      const sysText = typeof payload.system === "string"
-        ? payload.system
-        : (Array.isArray(payload.system)
-            ? payload.system.map(s => (typeof s === "string" ? s : (s && s.text) || "")).join("\n\n")
-            : (payload.system.text || ""));
-      if (sysText) reqBody.systemInstruction = { parts: [{ text: sysText }] };
-    }
-    const body = JSON.stringify(reqBody);
-    const r = https.request({
-      hostname: "generativelanguage.googleapis.com",
-      path: `/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(GEMINI_KEY)}`,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Content-Length": Buffer.byteLength(body),
-      },
-    }, resp => {
-      let buf = "";
-      resp.on("data", c => buf += c);
-      resp.on("end", () => {
-        try {
-          const parsed = JSON.parse(buf);
-          if (resp.statusCode >= 400) { resolve({ status: resp.statusCode, body: parsed }); return; }
-          const cand = (parsed.candidates && parsed.candidates[0]) || {};
-          const parts = (cand.content && cand.content.parts) || [];
-          const text = parts.map(p => p.text || "").join("");
-          const um = parsed.usageMetadata || {};
-          resolve({
-            status: 200,
-            body: {
-              content: [{ type: "text", text }],
-              model,
-              usage: {
-                input_tokens: um.promptTokenCount || 0,
-                output_tokens: um.candidatesTokenCount || 0,
-                cache_creation_input_tokens: 0,
-                cache_read_input_tokens: 0,
-              },
-            },
-          });
-        } catch (e) {
-          resolve({ status: resp.statusCode, body: { error: buf } });
-        }
-      });
-    });
-    r.on("error", reject);
-    r.write(body);
-    r.end();
-  });
+  return llmDispatch("gemini", payload, { apiKey: GEMINI_KEY, model: payload.model || "gemini-2.0-flash", temperature: 0.7 });
 }
 
 // Ollama — local LLM (default http://localhost:11434), OpenAI-compatible
 // endpoint. Same normalization as postXAI so the client never has to care.
 function postOllama(payload) {
-  return new Promise((resolve, reject) => {
-    const oaiMessages = [];
-    if (payload.system) oaiMessages.push({ role: "system", content: payload.system });
-    for (const m of payload.messages || []) oaiMessages.push(m);
-    const fallbackModel = process.env.OLLAMA_MODEL
-      || (OLLAMA_STATUS.models[0] && OLLAMA_STATUS.models[0].id)
-      || "qwen2.5:14b-instruct-q4_K_M";
-    const body = JSON.stringify({
-      model: payload.model || fallbackModel,
-      messages: oaiMessages,
-      max_tokens: payload.max_tokens || 1024,
-      stream: false,
-    });
-    const transport = OLLAMA_PROTO === "https" ? https : http;
-    const r = transport.request({
-      hostname: OLLAMA_HOST,
-      port: OLLAMA_PORT,
-      path: "/v1/chat/completions",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Content-Length": Buffer.byteLength(body),
-      },
-    }, resp => {
-      let buf = "";
-      resp.on("data", c => buf += c);
-      resp.on("end", () => {
-        try {
-          const parsed = JSON.parse(buf);
-          if (resp.statusCode >= 400) {
-            resolve({ status: resp.statusCode, body: parsed });
-            return;
-          }
-          const text = parsed.choices?.[0]?.message?.content || "";
-          resolve({
-            status: 200,
-            body: {
-              content: [{ type: "text", text }],
-              model: parsed.model || payload.model,
-              usage: { input_tokens: 0, output_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 },
-            },
-          });
-        } catch (e) {
-          resolve({ status: resp.statusCode, body: { error: buf } });
-        }
-      });
-    });
-    r.on("error", () => resolve({ status: 503, body: { error: `Ollama not reachable at ${OLLAMA_URL}` } }));
-    r.write(body);
-    r.end();
-  });
+  const fallbackModel = process.env.OLLAMA_MODEL
+    || (OLLAMA_STATUS.models[0] && OLLAMA_STATUS.models[0].id)
+    || "qwen2.5:14b-instruct-q4_K_M";
+  // Local OpenAI-compatible endpoint at the configured OLLAMA_URL (no key).
+  return llmDispatch("ollama", payload, { apiKey: "", model: payload.model || fallbackModel, baseUrl: OLLAMA_URL + "/v1/chat/completions" });
 }
 
 // Probe Ollama on startup so the client can light up the "Local" engine
@@ -1128,8 +961,8 @@ const server = http.createServer(async (req, res) => {
   serveStatic(req, res);
 });
 
-// Bind to 0.0.0.0 so iPhones / iPads on the same Wi-Fi can connect.
-// Discover and print every reachable IPv4 address so you can pick the right one.
+// When LAN-exposed (--lan / HOST=0.0.0.0), discover and print every reachable
+// IPv4 address so you can pick the right one from a phone / iPad.
 function lanAddresses() {
   const os = require("os");
   const out = [];
@@ -1142,11 +975,13 @@ function lanAddresses() {
   return out;
 }
 
-server.listen(PORT, "0.0.0.0", async () => {
+server.listen(PORT, HOST, async () => {
   const lan = lanAddresses();
   await probeOllama();
+  const lanOn = HOST !== "127.0.0.1" && HOST !== "localhost";
   console.log(`\n┌─ CODEX server  ────────────────────────────────────────────`);
   console.log(`│  port:    ${PORT}`);
+  console.log(`│  bind:    ${HOST}${lanOn ? "  (LAN-exposed)" : "  (localhost only — restart with --lan to expose)"}`);
   console.log(`│  default: ${MODEL}`);
   console.log(`│  providers:`);
   console.log(`│    · anthropic  ${API_KEY ? "✓ key set" : "✗ no key  (set ANTHROPIC_API_KEY)"}`);
@@ -1156,6 +991,10 @@ server.listen(PORT, "0.0.0.0", async () => {
   console.log(`│    · ollama     ${OLLAMA_STATUS.ok ? `✓ ${OLLAMA_STATUS.models.length} local model(s) @ ${OLLAMA_URL}` : `✗ not running @ ${OLLAMA_URL}`}`);
   console.log(`│`);
   console.log(`│  desktop: http://localhost:${PORT}`);
-  for (const a of lan) console.log(`│  phone:   http://${a.address}:${PORT}   (${a.iface})`);
+  if (lanOn) {
+    for (const a of lan) console.log(`│  phone:   http://${a.address}:${PORT}   (${a.iface})`);
+  } else {
+    console.log(`│  phone:   off — restart with \`--lan\` to allow Wi-Fi devices`);
+  }
   console.log(`└────────────────────────────────────────────────────────────\n`);
 });

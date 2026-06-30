@@ -1,0 +1,13 @@
+# This repo stores code as LF. Without this, core.autocrlf=true on Windows
+# rewrites the committed, pre-transpiled dist/*.js (LF) to CRLF in the working
+# tree, so every `npm run build` shows phantom diffs — which would falsely trip
+# the CI "dist/ is in sync" guard. Pin LF for all code/text we build or ship.
+dist/*.js text eol=lf
+*.js       text eol=lf
+*.jsx      text eol=lf
+*.mjs      text eol=lf
+*.css      text eol=lf
+*.html     text eol=lf
+*.json     text eol=lf
+*.md       text eol=lf
+*.svg      text eol=lf
