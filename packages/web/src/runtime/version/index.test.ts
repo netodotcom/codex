@@ -38,8 +38,8 @@ describe("CODEX_VERSION_DATA", () => {
     expect(CODEX_VERSION_DATA.v).toBe("12.0");
   });
 
-  it("sw is 'v269'", () => {
-    expect(CODEX_VERSION_DATA.sw).toBe("v269");
+  it("sw is 'v270'", () => {
+    expect(CODEX_VERSION_DATA.sw).toBe("v270");
   });
 
   it("notes is a non-empty array of strings", () => {
@@ -62,7 +62,7 @@ describe("window.CODEX_VERSION", () => {
     await import("./index.js");
     const cv = vw().CODEX_VERSION;
     expect(cv.v).toBe("12.0");
-    expect(cv.sw).toBe("v269");
+    expect(cv.sw).toBe("v270");
     expect(Array.isArray(cv.notes)).toBe(true);
     expect(cv.notes.length).toBeGreaterThan(0);
   });

@@ -18,7 +18,9 @@ export interface ParsedRef {
 
 export interface ToolDef {
   name: string;
-  description: string;
+  // Optional to match legacy: register() (legacy/kernel.js:72) validates only
+  // `name` and `run`; consumers (legacy/kernel.js:624) fall back with `|| ""`.
+  description?: string;
   sideEffect?: boolean;
   run: (args: Record<string, unknown>) => Promise<string>;
 }

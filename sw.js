@@ -13,7 +13,7 @@
 // because that storage is independent of the SW caches.
 
 // ⚠️ MIRRORED in version.js (CODEX_VERSION.sw) — bump BOTH together.
-const VERSION = "v269";
+const VERSION = "v270";
 const SHELL = `codex-shell-${VERSION}`;
 const DATA  = `codex-data-${VERSION}`;
 const PANELS = `codex-panels-${VERSION}`;
@@ -38,81 +38,20 @@ const SHELL_FILES = [
   // ── Core app shell ───────────────────────────────────────────────
   r("./"),
   r("index.html"),
-  r("styles.css"),
   r("manifest.json"),
   r("icon.svg"),
   // ── JS engine / data layer ───────────────────────────────────────
-  r("legacy/deleted/version.js"),
-  r("fresh.css"),
-  r("legacy/deleted/observability.js"),
-  r("legacy/deleted/boot-contract.js"),
-  r("legacy/deleted/direct-api.js"),
-  r("legacy/i18n.js"),
-  r("legacy/deleted/ai-translate-ui.js"),
-  r("legacy/deleted/light-themes.js"),
-  r("legacy/deleted/data.js"),
-  r("legacy/bible.js"),
-  r("legacy/deleted/auto-cache.js"),
-  r("legacy/deleted/sync.js"),
-  r("legacy/deleted/modules.js"),
-  r("legacy/deleted/plugins.js"),
-  r("legacy/engagement.js"),
-  r("legacy/deleted/gematria.js"),
-  r("legacy/panels-gen.js"),
-  r("legacy/deleted/mark-search.js"),
-  r("legacy/search.js"),
-  r("legacy/kernel.js"),
-  r("legacy/deleted/shell.js"),
-  r("legacy/wm.js"),
+  // ── App bundle (Vite build → assets/, promoted by scripts/promote-build.mjs).
+  //    One JS + one CSS replace the ~66 classic <script> files. Cache-busted by
+  //    the VERSION bump above (stable names, no content hash).
+  r("assets/codex.js"),
+  r("assets/codex.css"),
+  r("assets/manifest.json"),
+  r("assets/icon.svg"),
   // ── UI components ────────────────────────────────────────────────
-  r("legacy/deleted/dist/intel.js"),
-  r("legacy/deleted/dist/app.js"),
-  r("legacy/deleted/dist/components.js"),
-  r("legacy/deleted/dist/panels.js"),
-  r("legacy/deleted/dist/translations.js"),
-  r("legacy/deleted/dist/winhost.js"),
-  r("legacy/dist/oracle.js"),
-  r("legacy/deleted/dist/artifacts.js"), // shared AI artifacts engine (rich render + busy orb)
-  r("legacy/dist/library.js"),
   // v10 REBIRTH — reader-as-main-plugin + dismantled library + workflows
-  r("legacy/deleted/dist/reader.js"),
-  r("legacy/deleted/dist/library2.js"),
-  r("legacy/deleted/dist/oracle2.js"),
-  r("legacy/deleted/dist/marks-plugin.js"),
-  r("legacy/deleted/dist/textflow.js"),
-  r("legacy/deleted/displays.js"),
   r("data/red-letter.json"),
-  r("legacy/deleted/dist/tweaks-panel.js"),
-  r("legacy/deleted/dist/verse-menu.js"),
-  r("legacy/deleted/dist/verse-map.js"),
-  r("legacy/deleted/dist/verse-art.js"),
-  r("legacy/deleted/dist/verse-compare.js"),
-  r("legacy/deleted/dist/verse-mirror.js"),
-  r("legacy/deleted/dist/sword.js"),
-  r("legacy/deleted/dist/ops.js"),
-  r("legacy/deleted/dist/omnibar.js"),
-  r("legacy/deleted/dist/constellation.js"),
-  r("legacy/deleted/dist/mobile.js"), // v12 THE PALM — phone shell (orb · palm · sheets)
 
-  r("legacy/deleted/dist/notes.js"),
-  r("legacy/deleted/dist/help.js"),
-  r("legacy/deleted/dist/repo-add.js"),
-  r("legacy/deleted/dist/crossref.js"),
-  r("legacy/deleted/dist/strongs.js"),
-  r("legacy/deleted/dist/word-study.js"),
-  r("legacy/deleted/dist/dictionary.js"),
-  r("legacy/deleted/dist/reels.js"),
-  r("legacy/deleted/dist/continuity.js"),
-  r("legacy/deleted/dist/timeline.js"),
-  r("legacy/deleted/dist/jewish-study.js"),
-  r("legacy/deleted/dist/passage-guide.js"),
-  r("legacy/deleted/dist/builder.js"),
-  r("legacy/deleted/dist/plans.js"),
-  r("legacy/deleted/dist/quest-messiah.js"),
-  r("legacy/deleted/dist/ai-quests.js"),
-  r("legacy/deleted/dist/marketplace.js"),
-  r("legacy/deleted/dist/compare.js"),
-  r("legacy/deleted/dist/vox.js"),
   // ── Small data (< 30 KB each — cheap to pre-cache) ──────────────
   r("data/help/articles.json"),
   r("data/module-index.json"),

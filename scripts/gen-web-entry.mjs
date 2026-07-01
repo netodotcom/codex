@@ -13,7 +13,10 @@ import { dirname, join } from "node:path";
 import { MIGRATED } from "./migrated.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const html = readFileSync(join(ROOT, "index.html"), "utf8");
+// index.src.html is the hand-authored source template (the classic <script>
+// order + HTML shell). After the Vite cutover the shipped index.html IS the
+// built bundle, so the source of truth for script order lives here.
+const html = readFileSync(join(ROOT, "index.src.html"), "utf8");
 
 // Local scripts in document order (skip CDN https URLs).
 const re = /<script\s+src="(?!https?:)([^"]+\.js)"><\/script>/g;

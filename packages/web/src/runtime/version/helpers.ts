@@ -11,7 +11,7 @@ import { vw } from "./version-window.js";
 // hardcode versions anywhere else.
 export const CODEX_VERSION_DATA: CodexVersion = {
   v: "12.0",    // user-facing app version
-  sw: "v269",   // service-worker cache generation — MIRRORED in sw.js line ~21
+  sw: "v270",   // service-worker cache generation — MIRRORED in sw.js line ~16
   notes: [
     "THE WHOLE DESKTOP IS YOURS: every window now drags flush to any edge — the bug that pinned the galaxy is gone; spread your study across the entire screen",
     "⊞ ARRANGE: one tap lays your open windows side-by-side, in thirds, or quad — and you can NAME and save study setups to recall later",

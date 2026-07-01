@@ -924,8 +924,16 @@ let CLEANUP_MAP = new WeakMap<HTMLElement, () => void>();
 // ── enhance — turns a backdrop+card into a real workspace window ──────────────
 export function enhance(backdrop: HTMLElement, spec: WinSpec): void {
   if (ENHANCED.has(backdrop) || !active()) return;
-  const card = backdrop.querySelector<HTMLElement>(spec.card);
-  if (!card) return;
+  const cardOrNull = backdrop.querySelector<HTMLElement>(spec.card);
+  if (!cardOrNull) return;
+  // NOTE: preserved from legacy — `card` is never reassigned after this
+  // guard (mirrors `var card = ...; if (!card) return;` in legacy/wm.js),
+  // so it's safe for the rest of the function, including nested closures
+  // (drag/resize/timeout handlers) that run later. Rebinding to an
+  // explicitly non-null type here (rather than 11 scattered `card!`
+  // assertions) is the single guard TS's closure narrowing can't infer on
+  // its own — it does not change which object `card` refers to.
+  const card: HTMLElement = cardOrNull;
   ENHANCED.add(backdrop);
 
   const head = card.querySelector<HTMLElement>(spec.head);

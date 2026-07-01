@@ -65,23 +65,50 @@ Then there's **BabelForge** — a translation lab. Pick a voice (1611 King James
 - Service worker caches every translation you open
 - IndexedDB for notes, plans, your forged translations
 - Works on a plane, in a tent, in a basement
-- No build step — single HTML file, fork and go
+- Zero-install to run — the built bundle is committed; fork and go
 
 ## Getting started
+
+### Run it
 
 ```
 git clone https://github.com/holasoyneto/codex
 cd codex
-node server.js
-# open http://localhost:7777 — drop in your API key in Settings to enable AI panels
+node server.js          # → http://localhost:7777
 ```
 
-By default the server binds to `127.0.0.1` (your machine only) — the `/api/chat`
-proxy spends your API key with no auth, so it should not be exposed. To open
-CODEX from a phone or tablet on the same Wi-Fi, start it with `node server.js --lan`
-(binds `0.0.0.0` and prints the LAN URL). Only do this on a network you trust.
+No `npm install`, no build step. `index.html` + `assets/` are the **committed Vite
+bundle**, so a fresh clone runs immediately — pure Node, standard library only. Open
+`http://localhost:7777` and drop your API key into Settings to light up the AI panels.
 
-Or just open the hosted build: **https://holasoyneto.github.io/codex**
+- **Binds `127.0.0.1` by default** (localhost only) — the `/api/chat` proxy spends your
+  API key with no auth, so it must not be exposed.
+- **Phone / tablet on the same Wi-Fi:** `node server.js --lan` binds `0.0.0.0` and prints
+  the LAN URL. Only on a network you trust.
+- **Nothing to install at all:** just open the hosted build → **https://holasoyneto.github.io/codex**
+
+### Develop it
+
+CODEX is a **TypeScript-strict monorepo** (npm workspaces `packages/core` + `packages/web`),
+bundled with **Vite**. You only need this to *change* the app — running it needs nothing but
+`node server.js`.
+
+```
+npm install         # dev tooling only (Vite, Vitest, TypeScript) — no lockfile committed
+npm run dev         # Vite dev server + HMR → http://127.0.0.1:5180/index.vite.html
+npm run typecheck   # strict tsc across packages/core + packages/web
+npm test            # full Vitest suite (jsdom)
+npm run build       # bundle + promote index.html + assets/ to the repo root
+npm run parity      # headless-Chrome boot-parity probe vs the golden signature
+```
+
+**The build is committed** — that's what "fork & go" means now. Edit the source HTML shell
+in **`index.src.html`** (never the generated `index.html`). `npm run build` regenerates
+`packages/web/src/main.ts` + `index.vite.html`, bundles everything into `assets/codex.js`
+and `assets/codex.css`, and promotes `index.html` + `assets/` to the repo root. **Commit the
+rebuilt bundle together with your source change** — CI fails if `index.html`/`assets/` drift
+from source. Cache-busting for offline users is the service-worker `VERSION` bump in `sw.js`
+(mirror it in `packages/web/src/runtime/version/`).
 
 ### Connecting an AI engine
 
@@ -95,7 +122,7 @@ CODEX speaks to five providers — pick whichever you like, mix and match, or ru
 
 ## Tech
 
-Single-page React 18 app loaded via CDN with Babel-standalone — there is no build step, no bundler, no `node_modules` graveyard. Persistence lives in IndexedDB; offline lives in a Service Worker; translations stream from public-domain APIs and cache locally. The plugin system means every companion panel (gematria, Talmud, gnosis, Oracle) is a drop-in JSX module. Fork the repo, open `index.html`, and you're already running it.
+React 18 single-page app, written as a **TypeScript-strict monorepo** (`packages/core`, `packages/web`) and bundled with **Vite** into one committed `index.html` + `assets/codex.js`/`codex.css`. React itself still loads from a CDN (one shared instance), so the bundle stays lean. The build is committed to the repo — fork it, `node server.js`, and you're running it with zero install; the "fork & go" ethos survives the move off the old CDN-Babel, no-bundler setup. Persistence lives in IndexedDB; offline lives in a Service Worker (`sw.js`, precaching the bundle); translations stream from public-domain APIs and cache locally. The plugin system means every companion panel (gematria, Talmud, gnosis, Oracle) is a self-contained TypeScript module that self-registers on load.
 
 ## License
 

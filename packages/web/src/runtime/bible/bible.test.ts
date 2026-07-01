@@ -383,8 +383,12 @@ describe("loadChapter (bible-api source)", () => {
     vi.stubGlobal("fetch", fetchMock);
     const { loadChapter } = await import("./helpers.js");
     await loadChapter("jhn", 3, "kjv");
-    const url = (fetchMock as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string;
-    expect(url).toContain("bible-api.com");
+    // NOTE: module init unconditionally fires a "data/red-letter.json" fetch
+    // first (legacy/bible.js:549 `_loadRedLetterTruth();`, ported as-is in
+    // helpers.ts), so the chapter-fetch call is not necessarily calls[0].
+    const calls = (fetchMock as ReturnType<typeof vi.fn>).mock.calls as [string][];
+    const url = calls.map(c => c[0]).find(u => u.includes("bible-api.com"));
+    expect(url).toBeDefined();
     expect(url).toContain("john");
     expect(url).toContain("3");
     expect(url).toContain("translation=kjv");
@@ -426,8 +430,12 @@ describe("loadChapter (bolls source)", () => {
     vi.stubGlobal("fetch", fetchMock);
     const { loadChapter } = await import("./helpers.js");
     await loadChapter("jhn", 1, "asv");
-    const url = (fetchMock as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string;
-    expect(url).toContain("bolls.life");
+    // NOTE: module init unconditionally fires a "data/red-letter.json" fetch
+    // first (legacy/bible.js:549 `_loadRedLetterTruth();`, ported as-is in
+    // helpers.ts), so the chapter-fetch call is not necessarily calls[0].
+    const calls = (fetchMock as ReturnType<typeof vi.fn>).mock.calls as [string][];
+    const url = calls.map(c => c[0]).find(u => u.includes("bolls.life"));
+    expect(url).toBeDefined();
     // jhn = 43
     expect(url).toContain("/43/");
     expect(url).toContain("ASV");
@@ -787,7 +795,12 @@ describe("clementine (Latin) translation quirk", () => {
     vi.stubGlobal("fetch", fetchMock);
     const { loadChapter } = await import("./helpers.js");
     await loadChapter("gen", 1, "clementine");
-    const url = (fetchMock as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string;
+    // NOTE: module init unconditionally fires a "data/red-letter.json" fetch
+    // first (legacy/bible.js:549 `_loadRedLetterTruth();`, ported as-is in
+    // helpers.ts), so the chapter-fetch call is not necessarily calls[0].
+    const calls = (fetchMock as ReturnType<typeof vi.fn>).mock.calls as [string][];
+    const url = calls.map(c => c[0]).find(u => u.includes("bible-api.com"));
+    expect(url).toBeDefined();
     // NOTE: preserved from legacy — clementine uses uppercase bookId
     expect(url).toContain("GEN");
   });

@@ -35,6 +35,8 @@ export const ENGINES = [
   "version", "observability", "light-themes", "mark-search", "gematria", "modules",
   // wave 2 (foundational small/medium: data + plugins are probe-tracked)
   "data", "plugins", "boot-contract", "auto-cache", "sync", "shell", "displays", "ai-translate-ui",
+  // wave 3 (large foundational: i18n + bible are probe-tracked via t/BIBLE)
+  "i18n", "bible", "engagement", "wm", "search", "panels-gen", "kernel",
 ];
 
 export const MIGRATED = {

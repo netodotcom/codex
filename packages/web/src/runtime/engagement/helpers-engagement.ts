@@ -896,8 +896,10 @@ function clearState(): { ok: boolean } {
 // BUS WIRING — the engine LISTENS so emitters only need to dispatch.
 // ════════════════════════════════════════════════════════════════════════════════
 function onDepthAction(e: Event): void {
-  const d = ((e as CustomEvent).detail as RecordInput | null) ?? {};
-  record({ type: d.type, ref: d.ref, weight: d.weight, domain: d.domain, ts: d.ts });
+  // NOTE: preserved from legacy — `detail` is untrusted external payload, so every
+  // field (including `type`) may be absent; record() itself guards against that.
+  const d: Partial<RecordInput> = ((e as CustomEvent).detail as Partial<RecordInput> | null) ?? {};
+  record({ type: d.type, ref: d.ref, weight: d.weight, domain: d.domain, ts: d.ts } as RecordInput);
 }
 
 // Register the bus listener at module load time (mirrors IIFE side-effect).

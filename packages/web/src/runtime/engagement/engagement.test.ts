@@ -76,7 +76,7 @@ describe("window.CODEX_ENGAGE (global contract)", () => {
       "trackSearch", "trackPanel", "trackReel", "trackQuest", "trackSession",
       "isReelLiked", "toggleReelLike", "getReelLikes", "clearProfile", "buildReaderProfile",
     ]) {
-      expect(typeof (api as Record<string, unknown>)?.[k]).toBe("function");
+      expect(typeof (api as unknown as Record<string, unknown>)?.[k]).toBe("function");
     }
   });
 
@@ -103,7 +103,7 @@ describe("window.CODEX_ENGAGEMENT (global contract)", () => {
       "listSeasons", "getConfig", "setConfig", "eventLog",
       "export", "import", "clear",
     ]) {
-      expect(typeof (api as Record<string, unknown>)?.[k]).toBe("function");
+      expect(typeof (api as unknown as Record<string, unknown>)?.[k]).toBe("function");
     }
   });
 
@@ -217,9 +217,9 @@ describe("streak math", () => {
 
 describe("ACHIEVEMENTS array", () => {
   it("has 27 achievement definitions", () => {
-    // 6 reading + 6 streak + 10 feature + 4 session + 3 depth = 29? Let's count exactly.
-    // From legacy: first_chapter through highlights_x100 = 29 entries.
-    expect(ACHIEVEMENTS.length).toBe(29);
+    // legacy/engagement.js lines 132-169: 6 reading + 6 streak + 8 feature
+    // discovery + 4 session + 3 investment-depth = 27 entries exactly.
+    expect(ACHIEVEMENTS.length).toBe(27);
   });
 
   it("every achievement has id, title, desc, icon, tier, check", () => {

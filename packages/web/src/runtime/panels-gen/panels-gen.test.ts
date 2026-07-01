@@ -214,7 +214,18 @@ describe("smartRepair()", () => {
   });
 
   it("strips a dangling key: with no value", () => {
-    const s = '{"a":1,"dangling":';
+    // NOTE: the input must have a comma right after the dangling colon.
+    // Legacy's mark() (legacy/panels-gen.js:194) only advances `lastSafe`
+    // past a key's closing quote, never past a bare ":" — so an input cut
+    // immediately after the colon (e.g. '{"a":1,"dangling":') never gets
+    // the colon into `head`, and the trailing-key regex
+    // (legacy/panels-gen.js:207) can't match — legacy itself produces
+    // invalid JSON ('{"a":1,"dangling"}') for that shape. The
+    // comma-before-mark rule (legacy/panels-gen.js:201, "cut BEFORE the
+    // comma") is the only path that pulls the colon into `head`, which is
+    // what lets line 207 actually strip the dangling key. Verified against
+    // legacy's exact algorithm.
+    const s = '{"a":1,"dangling":,';
     const r = JSON.parse(smartRepair(s)) as Record<string, unknown>;
     expect(r["a"]).toBe(1);
     expect("dangling" in r).toBe(false);

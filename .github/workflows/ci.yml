@@ -15,23 +15,28 @@ jobs:
           node-version: 20
 
       # No lockfile is committed (package-lock.json is gitignored), so use
-      # `npm install`. devDeps are few and @babel/standalone is pinned exact.
-      - name: Install dev tooling
+      # `npm install`.
+      - name: Install
         run: npm install
 
-      - name: Syntax check (.js + .jsx)
-        run: npm run check
+      - name: Typecheck (core + web, strict)
+        run: npm run typecheck
 
-      - name: Rebuild dist/ from source
+      - name: Unit tests (vitest)
+        run: npm test
+
+      # Rebuild the committed bundle from source and fail if it drifts. The app
+      # ships index.html + assets/ (the Vite build promoted to the repo root by
+      # scripts/promote-build.mjs) so it runs with zero install. If a source
+      # change didn't have `npm run build` run + committed, the rebuild below
+      # produces different output than what's committed — fail loudly so a stale
+      # bundle never reaches a deploy (GitHub Pages serves the root verbatim).
+      - name: Rebuild committed bundle from source
         run: npm run build
 
-      # The app ships pre-transpiled dist/*.js committed to the repo. If a .jsx
-      # was changed without running `npm run build`, the rebuild above produces
-      # different output than what was committed — fail loudly so stale dist/
-      # never reaches a deploy (e.g. GitHub Pages serves dist/ verbatim).
-      - name: Verify dist/ is in sync with sources
+      - name: Verify committed bundle is in sync with sources
         run: |
-          if ! git diff --exit-code -- dist/; then
-            echo "::error::dist/ is out of sync with the .jsx sources. Run 'npm run build' and commit the dist/ changes."
+          if ! git diff --exit-code -- index.html assets/; then
+            echo "::error::index.html / assets/ are out of sync with source. Run 'npm run build' and commit the result."
             exit 1
           fi
