@@ -4,7 +4,7 @@ A **module** is a pure-JSON file that adds study data to CODEX — a lexicon, a 
 
 Modules are **the easiest way to contribute to CODEX** — no JavaScript required. If you can write valid JSON, you can ship a module.
 
-See also: [`SPEC.md`](./SPEC.md) for the formal spec · [`CONTRIBUTING.md`](./CONTRIBUTING.md) · [`API.md`](./API.md).
+See also: [`SPEC.md`](./SPEC.md) for the formal spec · [`CONTRIBUTING.md`](../CONTRIBUTING.md) · [`API.md`](./API.md).
 
 ---
 
@@ -238,8 +238,8 @@ Per-verse trope marks for chanting Torah/Haftarah/Megillot:
 ## 4. Testing a module locally
 
 1. Drop your JSON into `data/modules/<your-id>.json`.
-2. Start the dev server: `node server.js`.
-3. Open `http://localhost:3000`.
+2. Start the server: `node server.js`.
+3. Open `http://localhost:7777`.
 4. In the JS console:
 
    ```js
@@ -275,7 +275,7 @@ Two routes today, one route soon:
 
 ### Attribution and licensing
 
-Please include `meta.source` for any public-domain corpus you draw from (e.g. *Treasury of Scripture Knowledge, 1834, public domain*). For modern works, ship only what you own or have explicit permission to redistribute. CODEX's repository defaults to permissive licensing — see [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+Please include `meta.source` for any public-domain corpus you draw from (e.g. *Treasury of Scripture Knowledge, 1834, public domain*). For modern works, ship only what you own or have explicit permission to redistribute. CODEX's repository defaults to permissive licensing — see [`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
 ### Size and partials
 

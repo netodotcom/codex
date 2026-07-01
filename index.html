@@ -35,8 +35,8 @@
     });
     window.addEventListener('load', function () {
       try {
-        // Babel no longer ships — JSX is pre-transpiled (dist/, built by
-        // scripts/build-jsx.mjs). Only React remains boot-critical.
+        // The app is a Vite bundle (assets/codex.js); only React is loaded
+        // from the CDN, so it's the one boot-critical external dependency.
         if (typeof window.React === 'undefined') {
           push({
             when: Date.now(),
@@ -79,14 +79,14 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""></script>
 
-<!-- SPEED foundation (v7.6): production React, and NO in-browser Babel —
-     every .jsx ships pre-transpiled from dist/ (scripts/build-jsx.mjs). -->
+<!-- Production React from the CDN (one shared window.React instance); the app
+     itself is a Vite bundle loaded as a module at the end of <body>. -->
 <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
 <style>
 /* ── Cold-boot terminal overlay ──────────────────────────────────────
    Renders instantly (inline) so the user has something beautiful to
-   read while React, Babel, fonts, and JSX bundles stream in. Removes
+   read while React, fonts, and the app bundle stream in. Removes
    itself once the app mounts. Skipped if codex.bootIntro is "0". */
 #cx-boot {
   position: fixed; inset: 0; z-index: 99999;

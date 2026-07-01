@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // CODEX terminal client. Read scripture + run Oracle/panels from the shell.
 // Pure Node 18+, no deps. Talks to bible-api.com for verses and to a
-// locally-running CODEX server (default http://localhost:3001) for AI calls.
+// locally-running CODEX server (default http://localhost:7777) for AI calls.
 
-const SERVER = process.env.CODEX_SERVER || "http://localhost:3001";
+const SERVER = process.env.CODEX_SERVER || "http://localhost:7777";
 const BIBLE_API = "https://bible-api.com";
 
 // Tiny ANSI helpers — no chalk, no deps.

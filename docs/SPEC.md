@@ -2,7 +2,7 @@
 
 **Status:** Living document. Versioned with the app (see `sw.js` → `VERSION`).
 **Audience:** Plugin authors, module authors, translation maintainers, server operators.
-**Companion docs:** [`MODULES.md`](./MODULES.md) · [`API.md`](./API.md) · [`CONTRIBUTING.md`](./CONTRIBUTING.md) · [`ROADMAP.md`](./ROADMAP.md)
+**Companion docs:** [`MODULES.md`](./MODULES.md) · [`API.md`](./API.md) · [`CONTRIBUTING.md`](../CONTRIBUTING.md) · [`ROADMAP.md`](./ROADMAP.md)
 
 CODEX is an open-source, distraction-respectful, multi-tradition Bible study PWA. The goal of this document is to make every extension surface — code, data, and translations — predictable enough that anyone can build on it without reading the entire codebase.
 
@@ -11,22 +11,18 @@ CODEX is an open-source, distraction-respectful, multi-tradition Bible study PWA
 ## 1. Architecture at a glance
 
 ```
-┌──────────────────────────────── Browser (PWA) ────────────────────────────────┐
-│                                                                               │
-│   index.html ── boot ──▶ app.jsx (React via Babel-standalone, no bundler)     │
-│       │                                                                       │
-│       ├── data layer:   bible.js  data.js  modules.js  search.js  gematria.js │
-│       ├── ui layer:     panels.jsx components.jsx help.jsx oracle.jsx …       │
-│       ├── plugin host:  plugins.js   ── window.CODEX_PLUGINS_API              │
-│       ├── service wrk:  sw.js        ── 3 caches: shell / data / panels       │
-│       └── storage:      localStorage (codex.* keys) + IndexedDB (3 DBs)       │
-│                                                                               │
-└────────────────────────────────────┬──────────────────────────────────────────┘
-                                     │ HTTPS (only when AI is invoked)
-                                     ▼
-┌──────────────────── server.js (Node, std-lib only, no deps) ──────────────────┐
-│   /api/health   /api/key   /api/chat   ──▶  Anthropic | xAI | Ollama (local)  │
-└───────────────────────────────────────────────────────────────────────────────┘
+Browser (PWA)
+  index.html ─ boot ─▶ assets/codex.js      Vite bundle · TypeScript source
+      built from index.src.html + packages/{core, web}
+      ├─ data layer:    runtime/{bible, data, modules, search, gematria}
+      ├─ ui layer:      components/{reader, panels, help, oracle2, …}
+      ├─ plugin host:   runtime/plugins   ─▶ window.CODEX_PLUGINS_API
+      ├─ service wkr:   sw.js   ─ caches: shell (bundle) / data / panels
+      └─ storage:       localStorage (codex.* keys) + IndexedDB (3 DBs)
+                          │
+                          ▼   HTTPS (only when AI is invoked)
+server.js  (Node, std-lib only, no deps)
+  /api/health · /api/key · /api/chat  ─▶  Anthropic · xAI · Groq · Gemini · Ollama
 ```
 
 Everything below the server boundary is optional. CODEX is fully functional offline once the shell + a translation are cached; only LLM-backed features (Oracle, panel generation) need the proxy.
@@ -39,11 +35,11 @@ CODEX has **three** independent extension surfaces. Pick the smallest one that f
 
 | Surface | What it adds | Trust level | Loaded via |
 |---|---|---|---|
-| **Plugins** (code) | New right-rail panels, verse-menu actions, navigation/selection hooks | High — runs JS in the page | `<script>` tag or future installer |
+| **Plugins** (code) | New right-rail panels, verse-menu actions, navigation/selection hooks | High — runs JS in the page | TS module in `packages/web/src/components/` (bundled) |
 | **Modules** (data) | Lexicons, cross-refs, commentaries, plans, timelines, maps, parshiot, cantillation | Low — pure JSON | `window.CODEX_MODULES.loadModule(id)` |
-| **Translations** | Bible text in any language / versification | Low — JSON verses | `bible.js` translation registry |
+| **Translations** | Bible text in any language / versification | Low — JSON verses | bible engine (`packages/web/src/runtime/bible/`) |
 
-See [`MODULES.md`](./MODULES.md) for the module authoring guide and [`CONTRIBUTING.md`](./CONTRIBUTING.md) for translations.
+See [`MODULES.md`](./MODULES.md) for the module authoring guide and [`CONTRIBUTING.md`](../CONTRIBUTING.md) for translations.
 
 ---
 

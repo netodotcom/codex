@@ -95,7 +95,7 @@ bundled with **Vite**. You only need this to *change* the app — running it nee
 
 ```
 npm install         # dev tooling only (Vite, Vitest, TypeScript) — no lockfile committed
-npm run dev         # Vite dev server + HMR → http://127.0.0.1:5180/index.vite.html
+npm run dev         # Vite dev server + HMR → http://127.0.0.1:5180/index.src.html
 npm run typecheck   # strict tsc across packages/core + packages/web
 npm test            # full Vitest suite (jsdom)
 npm run build       # bundle + promote index.html + assets/ to the repo root
@@ -103,9 +103,9 @@ npm run parity      # headless-Chrome boot-parity probe vs the golden signature
 ```
 
 **The build is committed** — that's what "fork & go" means now. Edit the source HTML shell
-in **`index.src.html`** (never the generated `index.html`). `npm run build` regenerates
-`packages/web/src/main.ts` + `index.vite.html`, bundles everything into `assets/codex.js`
-and `assets/codex.css`, and promotes `index.html` + `assets/` to the repo root. **Commit the
+in **`index.src.html`** (its module entry is `packages/web/src/main.ts`) — never the generated
+`index.html`. `npm run build` bundles them into `assets/codex.js` + `assets/codex.css` and
+promotes `index.html` + `assets/` to the repo root. **Commit the
 rebuilt bundle together with your source change** — CI fails if `index.html`/`assets/` drift
 from source. Cache-busting for offline users is the service-worker `VERSION` bump in `sw.js`
 (mirror it in `packages/web/src/runtime/version/`).

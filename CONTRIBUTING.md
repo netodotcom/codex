@@ -1,8 +1,10 @@
 # Contributing to CODEX
 
-Thanks for showing up. CODEX is open-source, vanilla, no-build — anyone with a text editor and Node can ship a meaningful change in an afternoon. This guide explains how.
+Thanks for showing up. CODEX is open-source and still **fork-and-go** — a fresh clone runs with
+zero install (`node server.js`) because the built bundle is committed. To *change* the app you now
+work in a small TypeScript monorepo bundled with Vite. This guide explains how.
 
-Companion docs: [`SPEC.md`](./SPEC.md) (the formal extension spec) · [`MODULES.md`](./MODULES.md) (data modules) · [`API.md`](./API.md) (window globals + events) · [`ROADMAP.md`](./ROADMAP.md).
+Companion docs: [`SPEC.md`](./docs/SPEC.md) (the formal extension spec) · [`MODULES.md`](./docs/MODULES.md) (data modules) · [`API.md`](./docs/API.md) (window globals + events) · [`ROADMAP.md`](./docs/ROADMAP.md).
 
 ---
 
@@ -14,7 +16,7 @@ We are building an **open-source alternative to Logos** that respects attention,
 2. **Distraction-respectful.** No popups. No streaks. No badges for opening the app. Notifications are off by default. The default state of every UI affordance is *quiet*.
 3. **Multi-tradition.** Jewish, Catholic, Orthodox, Protestant, charismatic, academic, esoteric. CODEX surfaces parallels without claiming a winner. Scholarship, not proselytising.
 4. **AI-native but optional.** Oracle, panel generation, and translation drift are powerful when on, but the app reads scripture beautifully with the network unplugged and zero LLM access.
-5. **No build step.** Vanilla React via Babel-standalone. JSX in `.jsx`, plain JS in `.js`. If you can edit a file and refresh, you can ship.
+5. **Zero-install to *run*, one command to *build*.** The committed bundle (`index.html` + `assets/`) means anyone can fork and open it with no toolchain. Changing the app means editing TypeScript and running `npm run build` — the built bundle is committed alongside the source.
 
 If a feature pulls in any direction opposite these, expect pushback.
 
@@ -22,117 +24,126 @@ If a feature pulls in any direction opposite these, expect pushback.
 
 ## 2. Run it locally
 
+Running needs nothing but Node — the committed build boots as-is:
+
 ```bash
-git clone <fork-url> bible_study_app
-cd bible_study_app
-node server.js
+git clone <fork-url> codex
+cd codex
+node server.js          # → http://localhost:7777
 ```
 
-That's it. Open `http://localhost:3000`. There is no install step. There is no bundler.
+That's it — no `npm install` to just use CODEX. Open `http://localhost:7777`. The server binds
+`127.0.0.1` (localhost only) by default; the `/api/chat` proxy spends your API key with no auth,
+so don't expose it. Use `node server.js --lan` to reach it from a phone on a trusted Wi-Fi.
 
-Optional: drop an `.env` with `ANTHROPIC_API_KEY=sk-ant-…` (or `XAI_API_KEY=xai-…`) if you want to try Oracle and panel generation. The app works completely offline without it; AI features will just be inert.
+Optional: drop an `.env` with `ANTHROPIC_API_KEY=sk-ant-…` (or `XAI_API_KEY`, `GROQ_API_KEY`,
+`GEMINI_API_KEY`) to try Oracle and panel generation. The app works completely offline without it.
+For local LLMs, run [Ollama](https://ollama.com) on `localhost:11434` — `/api/health` discovers it.
 
-For local LLMs, run [Ollama](https://ollama.com) on `localhost:11434` — `/api/health` discovers it automatically.
+### Developing (changing the app)
+
+```bash
+npm install         # dev tooling only (Vite, Vitest, TypeScript) — no runtime deps, no lockfile committed
+npm run dev         # Vite dev server + HMR → http://127.0.0.1:5180/index.src.html
+npm run typecheck   # strict tsc across packages/core + packages/web
+npm test            # full Vitest suite (jsdom)
+npm run build       # bundle + promote index.html + assets/ to the repo root (the committed build)
+npm run parity      # headless-Chrome boot-parity probe vs the golden signature
+```
+
+**Commit the rebuilt bundle with your source change.** `npm run build` bundles `index.src.html`
+(whose module entry is `packages/web/src/main.ts`) into `assets/codex.js` + `assets/codex.css`
+and promotes `index.html` + `assets/` to the repo root. CI fails if `index.html`/`assets/` drift
+from source, so always run the build and stage the result.
 
 ---
 
 ## 3. File map
 
 ```
-index.html             ── single-page entrypoint, loads everything
-app.jsx                ── root React component, routing, layout
-server.js              ── Node std-lib HTTP server + AI proxy (no deps)
-sw.js                  ── service worker (3 caches, version bumps)
+index.src.html          ── SOURCE HTML shell (edit this — the CDN tags, <head>, #root)
+index.html              ── GENERATED, committed build entry (do NOT hand-edit)
+assets/codex.js|css     ── GENERATED, committed Vite bundle
+server.js               ── Node std-lib HTTP server + multi-provider AI proxy (no deps)
+sw.js                   ── service worker (precaches the bundle + small data; VERSION bump busts cache)
+cli.js                  ── optional terminal client (read scripture / Oracle from the shell)
 
-bible.js               ── translation registry, verse fetchers, IDB chapter cache
-data.js                ── static tables (book ids, chapter counts, …)
-modules.js             ── module loader (lexicons, cross-refs, …) → SPEC.md §4
-plugins.js             ── plugin host (panels + verse actions + hooks) → SPEC.md §3
-search.js              ── full-text search over cached verses
-gematria.js            ── pure-compute gematria + cross-ref index
-panels-gen.js          ── AI panel generator (Talmud / Commentary / Gematria / …)
-i18n.js                ── UI string lookup + drift
-light-themes.js        ── light theme registry
-auto-cache.js          ── background pre-fetch of common chapters
-sync.js                ── cross-device sync (Gist / Firebase backends)
-direct-api.js          ── browser-direct AI client (BYO key, skips server)
+packages/core/src/      ── framework-free shared logic (bundled to the browser AND the Node server)
+  refs.ts gematria.ts data.ts modules.ts bible.ts marks.ts i18n.ts panels.ts search.ts llm/
 
-panels.jsx             ── right-rail panels: Talmud, Commentary, Gematria, …
-components.jsx         ── shared UI building blocks
-help.jsx               ── in-app Help Wiki (reads data/help/articles.json)
-oracle.jsx             ── chat UI
-notes.jsx              ── notes + highlights + bookmarks
-strongs.jsx            ── Strong's panel + lookup UI
-crossref.jsx           ── cross-reference panel
-reels.jsx              ── discovery feed
-verse-*.jsx            ── verse menu, compare, mirror, map, art
-quest-messiah.jsx      ── quest engine
-tweaks-panel.jsx       ── developer tweak panel
-repo-add.jsx           ── add-a-module-repo UI
-library.jsx            ── library/catalog view
+packages/web/src/       ── the app (TypeScript + classic-JSX React)
+  main.ts               ── the entry: side-effect imports of every engine+feature, IN LOAD ORDER
+  runtime/<name>/       ── foundational engines: bible, search, wm, kernel, plugins, sync, …
+                           each has <name>-window.ts (the ONLY place window is cast),
+                           helpers.ts, types.ts, index.ts (load-time side effects), *.test.ts
+  components/<name>/     ── feature panels/plugins: reader, crossref, strongs, vox, plans, …
+                           each is a self-registering plugin (index.tsx)
+  services/direct-api.ts ── browser-direct AI client (BYO key, skips the server)
 
-data/
-  modules/             ── shipped JSON modules (SPEC §4 / MODULES.md)
-  help/articles.json   ── in-app help articles
-  …                    ── verses, marks, red-letter, etc.
+scripts/                ── promote-build.mjs (build → root), parity-probe.mjs (boot-parity gate),
+                           build-server-llm.mjs (core/llm → CJS for server.js) + manual smoke/QA tools
 
-styles.css             ── all styles, no preprocessor
-manifest.json          ── PWA manifest
-icon.svg               ── app icon
+data/                   ── shipped JSON: modules/ (SPEC §4 / MODULES.md), help/articles.json, verses, …
+styles.css · fresh.css  ── global CSS (Vite folds these into assets/codex.css)
+manifest.json · icon.svg ── PWA manifest + app icon
 ```
+
+The build pipeline is deliberately tiny: `vite build` bundles `index.src.html` (entry:
+`main.ts`) → `dist-web/` → `promote-build.mjs` copies the result to `index.html` + `assets/`.
 
 ---
 
 ## 4. Coding conventions
 
-- **Vanilla React via Babel-standalone**, transpiled in the browser. No TypeScript. No JSX type checker. No bundler.
-- **`.jsx`** for files containing JSX. **`.js`** for plain JS. The MIME map in `server.js` serves both as `text/javascript`.
-- **No npm dependencies in the runtime.** Node std-lib only in `server.js`. The PWA can be hosted on any static host (GitHub Pages already works) when AI features aren't needed.
-- **No global mutation outside `window.CODEX_*`.** Use the documented namespace (see [`API.md`](./API.md)).
-- **`var` is fine in older files** (e.g. `modules.js`). New code uses `const`/`let` and arrow functions, but stay consistent within a file.
-- **2-space indent**, semicolons, double quotes in JS, single in JSX attributes. Match what you see nearby.
-- **Comment the *why*.** The code says *what*; comments should explain *why this approach*. Look at the headers of `plugins.js`, `panels-gen.js`, `modules.js` for the house style.
-- **One file = one concern.** When a `.jsx` exceeds ~600 lines, consider splitting along a natural seam.
+- **TypeScript, strict.** `strict`, `noUncheckedIndexedAccess`, `noImplicitAny`, `verbatimModuleSyntax`. Relative imports use the `.js` extension even for `.ts` sources (e.g. `import { x } from "./helpers.js"`); use `import type` for type-only imports.
+- **Classic JSX.** `import React from "react"`; components keep React in scope (esbuild `jsxFactory: React.createElement`). React itself comes from the CDN (one shared `window.React` instance) — don't add it to the bundle.
+- **`.tsx`** for files containing JSX, **`.ts`** for plain TypeScript.
+- **The window boundary.** Every runtime engine touches globals only through its `<name>-window.ts` — a typed interface plus an accessor (`function xw(): XWindow { return window as unknown as XWindow; }`). That file is the SOLE home of `window as …` casts. Don't scatter `window as any` elsewhere.
+- **No runtime npm dependencies you don't need.** `server.js` is Node std-lib only. The browser bundle stays lean; think hard before adding a dependency.
+- **2-space indent**, semicolons, double quotes in TS, single in JSX attributes. Match what you see nearby.
+- **Comment the *why*.** The code says *what*; comments explain *why this approach*. Read the headers of `runtime/plugins/`, `runtime/kernel/`, `runtime/bible/` for the house style.
+- **One file = one concern.** Split along a natural seam before a file gets unwieldy.
 
 ---
 
 ## 5. Adding a new translation
 
-Translations live in `bible.js`. The general pattern:
+Translations live in the bible engine (`packages/web/src/runtime/bible/`). The general pattern:
 
-1. Register a translation in the `TRANSLATIONS` table (id, label, language, default versification, fetcher).
-2. Provide a fetcher function that returns `{ verses: [{ n, text }] }` for `(book, chapter)`. It can hit any API or use bundled JSON.
-3. If your translation has special needs (Hebrew RTL, Greek polytonic, red-letter overrides, YHWH restoration), wire those flags into the existing overlay system.
-4. Add a smoke test: open the app, switch to your translation, verify a few key passages render correctly.
+1. Register the translation in the translations table (id, label, language, default versification, fetcher).
+2. Provide a fetcher that returns `{ verses: [{ n, text }] }` for `(book, chapter)` — any API, or bundled JSON.
+3. Special needs (Hebrew RTL, Greek polytonic, red-letter overrides, YHWH restoration) wire into the existing overlay system.
+4. Add a Vitest case (and a manual smoke: switch to your translation, verify a few passages).
 
-For a self-contained text (no external API), bundle the JSON under `data/<your-id>/` and have the fetcher read from there. The service worker will pick it up automatically.
+For a self-contained text (no external API), bundle the JSON under `data/<your-id>/` and read from there; the service worker picks it up automatically.
 
 ---
 
 ## 6. Writing a panel (plugin)
 
-Smallest possible plugin:
+The plugin runtime contract is unchanged — a plugin self-registers by pushing onto `window.CODEX_PLUGINS`:
 
-```html
-<script>
-window.CODEX_PLUGINS = window.CODEX_PLUGINS || [];
-window.CODEX_PLUGINS.push({
+```ts
+// packages/web/src/components/hello-world/index.tsx
+import { pw } from "./hello-world-window.js"; // window boundary
+pw().CODEX_PLUGINS = pw().CODEX_PLUGINS || [];
+pw().CODEX_PLUGINS.push({
   id: "hello-world",
   name: "Hello World",
   version: "0.1.0",
   panels: [{
     id: "hello", label: "Hello", glyph: "✦",
-    render({ book, chapter, verse, container }) {
-      container.textContent = `Hello from ${book} ${chapter}:${verse ?? "?"}`;
+    render({ book, chapter, verse }) {
+      return React.createElement("div", null, `Hello from ${book} ${chapter}:${verse ?? "?"}`);
     },
   }],
 });
-</script>
 ```
 
-Drop that in `index.html` (or load it from anywhere) and you've added a right-rail panel.
-
-Full lifecycle, ctx shape, and event hooks: [`SPEC.md` §3](./SPEC.md#3-plugin-spec).
+The difference from the old no-build world: instead of a `<script>` in `index.html`, your panel is a
+TypeScript module under `packages/web/src/components/<name>/`. Add its import to
+`packages/web/src/main.ts` at the right load position, then run `npm run build` and commit the
+result. Full lifecycle, ctx shape, and event hooks: [`SPEC.md` §3](./docs/SPEC.md#3-plugin-spec).
 
 ---
 
@@ -163,9 +174,9 @@ Conventional-style, short imperative subject:
 feat: add Greek concordance module
 fix: panels-gen cache key collides across languages
 docs: clarify plugin lifecycle in SPEC.md
-refactor: split notes.jsx into notes-store + notes-ui
+refactor: split notes into notes-store + notes-ui
 perf: lazy-load gematria index on first panel open
-chore: bump sw VERSION to v167
+chore: bump sw VERSION to v271
 ```
 
 The body (optional) explains *why*. Wrap at ~72 chars. One commit per logical change.
@@ -178,16 +189,17 @@ A good PR:
 
 1. **Has a focused title** matching the commit style above.
 2. **Explains the user-visible change** in 2-3 sentences. Screenshots / short screencaps for UI work.
-3. **Notes any storage / cache / SW version bumps.** If you change a `codex.*.v<N>` key shape, bump the suffix and migrate on read.
-4. **Updates docs.** If you add a window global, document it in `API.md`. If you add a module type, update `SPEC.md` §4 and `MODULES.md`. New user-facing feature? Add a help article and update the chatbot function index (see `feedback_chatbot_function_index.md`).
-5. **Stays small.** Big PRs get split. If you must ship something large, post a short design note in an issue first.
+3. **Passes the gates.** `npm run typecheck` and `npm test` are green, and `npm run build` was run so the committed `index.html`/`assets/` match your source (CI enforces this).
+4. **Notes any storage / cache / SW version bumps.** If you change a `codex.*.v<N>` key shape, bump the suffix and migrate on read. If you touch the shell, bump `VERSION` in `sw.js` (mirror it in `packages/web/src/runtime/version/`).
+5. **Updates docs.** New window global → document it in [`API.md`](./docs/API.md). New module type → update [`SPEC.md`](./docs/SPEC.md) §4 and [`MODULES.md`](./docs/MODULES.md). New user-facing feature → add a help article.
+6. **Stays small.** Big PRs get split. For something large, post a short design note in an issue first.
 
 ### Etiquette
 
 - Don't bundle unrelated changes.
 - Don't re-format files you didn't touch.
-- Don't introduce a build step. (We will close the PR.)
-- Don't add runtime npm dependencies. (Same.)
+- Don't hand-edit the generated build output (`index.html`, `assets/`) — change the source (`index.src.html`, `main.ts`, `packages/`) and rebuild.
+- Think twice before adding a runtime dependency (browser bundle or `server.js`).
 - If you're not sure whether a change fits, open a draft PR or an issue — we'd rather chat early than ask you to redo work.
 
 ---
@@ -204,9 +216,9 @@ That's the whole thing.
 
 ## 11. Where to go next
 
-- The formal spec: [`SPEC.md`](./SPEC.md)
-- Modules tutorial: [`MODULES.md`](./MODULES.md)
-- API reference: [`API.md`](./API.md)
-- The roadmap (what we'd love help with): [`ROADMAP.md`](./ROADMAP.md)
+- The formal spec: [`SPEC.md`](./docs/SPEC.md)
+- Modules tutorial: [`MODULES.md`](./docs/MODULES.md)
+- API reference: [`API.md`](./docs/API.md)
+- The roadmap (what we'd love help with): [`ROADMAP.md`](./docs/ROADMAP.md)
 
 Welcome aboard.

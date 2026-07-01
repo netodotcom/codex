@@ -269,7 +269,7 @@ Timeline scrubbed. Detail: `{ year }`.
 
 - [`SPEC.md`](./SPEC.md) — formal extension specification
 - [`MODULES.md`](./MODULES.md) — module authoring guide
-- [`CONTRIBUTING.md`](./CONTRIBUTING.md) — how to contribute code, modules, translations
+- [`CONTRIBUTING.md`](../CONTRIBUTING.md) — how to contribute code, modules, translations
 - [`ROADMAP.md`](./ROADMAP.md) — what's next
 
 ---

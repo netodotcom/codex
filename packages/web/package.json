@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node ../../scripts/gen-web-entry.mjs",
     "build": "vite build",
     "preview": "vite preview"
   }

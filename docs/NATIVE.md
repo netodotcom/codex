@@ -66,7 +66,7 @@ The PWA must run perfectly inside a WKWebView **without a service worker**
 - **App Review survival kit** (guideline 4.2 "minimum functionality" —
   the answer to "it's just a website"):
   - fully-offline scripture: WLC + SBLGNT + KJV bundles in the app package
-  - **WidgetKit** verse-of-the-day + streak widget (port of `widget.html`)
+  - **WidgetKit** verse-of-the-day + streak home-screen widget
   - **Siri Shortcuts / App Intents**: "Read today's chapter", "Continue reading"
   - native share sheet for verses/studies; haptics on verse actions
   - respect Dynamic Type for reader font scaling

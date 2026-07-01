@@ -85,6 +85,12 @@ Stored in `data/modules/` (bundled) or loaded from community repos. Cached in lo
 
 ### Key Files to Modify
 
+> **Architecture note.** CODEX has since migrated to a **TypeScript monorepo bundled with Vite**.
+> The `.jsx`/`.js` names below are historical anchors — they now live as `.ts`/`.tsx` under
+> `packages/web/src/runtime/<name>/` (foundational engines), `packages/web/src/components/<name>/`
+> (feature panels), and `packages/core/src/` (shared logic). `server.js`, `sw.js`, and `styles.css`
+> stay at the repo root. See [`../CONTRIBUTING.md`](../CONTRIBUTING.md) for the current file map.
+
 | File | Role |
 |------|------|
 | `app.jsx` | Main app state, plugin mount, new tweaks, search state |

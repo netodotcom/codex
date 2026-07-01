@@ -60,7 +60,3 @@ _arch-viz.html
 FOUNDATION.md
 dist-web/
 
-# Generated Vite entry — regenerated from index.src.html by scripts/gen-web-entry.mjs
-# on every `npm run build`. Don't version the generated artifact.
-index.vite.html
-
